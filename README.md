@@ -48,6 +48,42 @@ CA and modified CD.
 ```
 
 
+## Algorithms for Extracting
+
+#### Extract text from audio ([5.1](http://shodhganga.inflibnet.ac.in/bitstream/10603/147552/14/14_chapter%205.pdf))
+
+```
+1. Read the stego audio file to get the audio samples and the frequency
+2. Apply DWT to get detail and approximation coefficients, CD, and CA
+respectively.
+3. Get the message size from the first CD coefficient.
+4. From second CD coefficient, consider as many coefficients as the size,
+which represent the encrypted message characters.
+5. Decrypt the message and write it into a file.
+```
+
+#### Extract image from audio ([5.2](http://shodhganga.inflibnet.ac.in/bitstream/10603/147552/14/14_chapter%205.pdf))
+
+```
+1. Read the stego audio file.
+2. Apply DWT to get detail and approximation coefficients, CD, and CA
+respectively.
+3. Convert CD to binary.
+4. OBH (original bits to be held) is set to 1.
+5. For each coefficient of CD, Calculate number of bits to be replaced (NBR):
+    5a) if 2^p <= CD and CD < 2^(p+1) for some integer p
+    5b) NBR <- p - OBH (original bits to be held)
+6. For range 1 to 16, retrieve image size
+(since 16 bits are used to store size in binary):
+    6a) Retrieve image size bits from LSBs of CDs, based on NBR of each CD.
+7. For range 17 to image size, retrieve the image bits:
+    7a) Retrieve image bits from LSB’s of remaining CDs based on NBR of each CD.
+8. Convert image bits to decimal.
+9. Rearrange converted image bits (in decimal) as a matrix.
+10. Obtain the inverse Arnold transformation to get the embedded image
+```
+
+
 ## Setup
 ### Prerequisites
 The following are required:
