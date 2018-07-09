@@ -1,5 +1,5 @@
 # WAVE-Steganography
-<img src="https://cloud.githubusercontent.com/assets/yourgif.gif" width="320" height="150">
+<img src="https://cdn-images-1.medium.com/max/1400/1*dQyfOpFWmSxrmdOcQgW6OQ.jpeg" width="320" height="150">
 
 Steganography is used to hide information. WAVE-Steganography can be used
 to hide data (a "secret") inside a WAV file (a "cover"). This
