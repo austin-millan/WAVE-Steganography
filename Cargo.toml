@@ -1,0 +1,10 @@
+[package]
+name = "Wave-Steganography"
+version = "0.1.0"
+authors = ["austin-millan <austin.millan@protonmail.com>"]
+
+[dependencies]
+dwt = "0.5.2"
+image = "*"
+byteorder = "*"
+rand = "*"
