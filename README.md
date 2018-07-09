@@ -57,7 +57,7 @@ Please see
 
 ## License
 
-(not done)
+Provided under MIT License by Austin Millan.
 
 ## References
 
