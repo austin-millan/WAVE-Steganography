@@ -1,8 +1,15 @@
+extern crate image;
+
 mod chaotic_maps;
-use chaotic_maps::{ChaoticMaps};
+
+use chaotic_maps::*;
+use std::path::Path;
+use self::image::DynamicImage;
+use std::fs::File;
 
 fn main() {
-    println!("Hello World");
-    let henon = ChaoticMaps::Henon{name: String::from("I'm Henon")};
-    println!("{}", henon.get_name());
+    let img = image::open(&Path::new(&String::from("examples/secret_image.jpg"))).unwrap();
+    let henon = ChaoticMaps::HenonMap();
+    henon.push_parameter(MapParameterValue::Integer(42));
+    henon.transform_image(img);
 }
