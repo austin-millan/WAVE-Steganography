@@ -18,9 +18,11 @@ fn main() {
     let arnold_map = ArnoldCatMap{parameters: arnold_params};
     henon_map.transform_image(&img);
     arnold_map.transform_image(&img);
+    // arnold_map.whoami();
 
     // Using manual scoping of enum
-    let henon_enum = ChaoticMapType::HenonMap(henon_params);
-    let arnold_enum = ChaoticMapType::ArnoldCatMap(arnold_params);
+    let henon_enum = ChaoticMapType::HenonMap{parameters: henon_params};
+    let arnold_enum = ChaoticMapType::ArnoldCatMap{parameters: arnold_params};
     println!("whoami: {:?}", henon_enum.whoami());
+    println!("whoami: {:?}", arnold_enum.whoami());
 }
