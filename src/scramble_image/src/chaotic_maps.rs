@@ -1,9 +1,16 @@
 extern crate image;
 
+#[allow(unused_imports)]
 use self::image::*;
+#[allow(unused_imports)]
 use std::fs::File;
+#[allow(unused_imports)]
 use std::path::Path;
+#[allow(unused_imports)]
 use std::vec::*;
+#[allow(unused_imports)]
+use std::borrow::Borrow;
+#[allow(unused_imports)]
 use super::derive_builder;
 
 
@@ -61,10 +68,11 @@ pub enum ChaoticMapType {
 
 
 impl ArnoldCatMap {
-    pub fn transform_image(&self, mut image: &image::DynamicImage) {
+    pub fn transform_image<'a>(&self, img: &'a image::DynamicImage) -> &'a image::DynamicImage{
         println!("ArnoldCatMap::transform_image(...)");
         let res = self.is_valid();
-        if self.is_valid() { println!("ArnoldCatMap is valid."); }
+        let transformed = img.borrow();
+        &transformed
     }
 
     pub fn is_valid(&self) -> bool {
@@ -75,10 +83,11 @@ impl ArnoldCatMap {
 }
 
 impl HenonMap {
-    pub fn transform_image(&self, mut image: &image::DynamicImage) {
+    pub fn transform_image<'a>(&self, img: &'a image::DynamicImage) -> &'a image::DynamicImage{
         println!("HenonMap::transform_image(...)");
         let res = self.is_valid();
-        if self.is_valid() { println!("HenonMap is valid."); }
+        let transformed = img.borrow();
+        &transformed
     }
 
     pub fn is_valid(&self) -> bool {
@@ -87,6 +96,7 @@ impl HenonMap {
     // ...fill in later
     }
 }
+
 
 impl ChaoticMapType {
     pub fn whoami(&self) -> String {
@@ -98,8 +108,3 @@ impl ChaoticMapType {
         }
     }
 }
-
-
-//fn main() {
-//    let henon_params_built:  HenonMapParametersBuilder::default();
-//}

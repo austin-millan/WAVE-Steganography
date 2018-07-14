@@ -4,35 +4,54 @@ extern crate derive_builder;
 
 mod chaotic_maps;
 
+#[allow(unused_imports)]
 use self::image::DynamicImage;
+#[allow(unused_imports)]
 use chaotic_maps::*;
+#[allow(unused_imports)]
 use std::path::Path;
+#[allow(unused_imports)]
 use std::fs::File;
+#[allow(unused_imports)]
 use std::vec::*;
 
-fn main() {
-    let mut img = image::open(&Path::new(&String::from("examples/secret_image.jpg"))).unwrap();
 
-    // Building
-    let henon_params = HenonMapParameters{val: 9999};
-    let arnold_params = ArnoldCatMapParameters{val: 22222};
-    let henon_params_builder = HenonMapParametersBuilder::default().
+fn test_henon() {
+    // Use sample image
+    let mut img = image::open(&Path::new(
+        &String::from("examples/secret_image.jpg"))).unwrap();
+
+    // Build parameters
+    let henon_params = HenonMapParametersBuilder::default().
         build()
         .unwrap();
 
-    // Using structs
-    let henon_map = HenonMap{parameters: henon_params_builder};
-    println!("DEFAULT VALUE ? {}", henon_map.parameters.val);
-    let arnold_map = ArnoldCatMap{parameters: arnold_params};
-    henon_map.transform_image(&img);
-    arnold_map.transform_image(&img);
-    // arnold_map.whoami();
+    // Initialize mapping algorithm with parameters
+    let henon = HenonMap{parameters: henon_params};
 
-    // Using manual scoping of enum
-    let henon_enum = ChaoticMapType::HenonMap{parameters: henon_params};
-    let arnold_enum = ChaoticMapType::ArnoldCatMap{parameters: arnold_params};
-    println!("whoami: {:?}", henon_enum.whoami());
-    println!("whoami: {:?}", arnold_enum.whoami());
+    // Transform sample image
+    let transformed = henon.transform_image( &mut img);
 
+    transformed.save("examples/output_henon.jpg").unwrap();
+}
 
+fn test_arnold() {
+    // Use sample image
+    let mut img = image::open(&Path::new(
+        &String::from("examples/secret_image.jpg"))).unwrap();
+
+    // Build parameters
+    let arnold_params = ArnoldCatMapParametersBuilder::default().
+        build()
+        .unwrap();
+
+    // Initialize mapping algorithm with parameters
+    let arnold = ArnoldCatMap{parameters: arnold_params};
+
+    // Transform sample image
+    // arnold.transform_image(&img);
+}
+
+fn main() {
+    test_henon();
 }
