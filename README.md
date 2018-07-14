@@ -1,6 +1,10 @@
 # WAVE-Steganography
 <img src="https://cdn-images-1.medium.com/max/1400/1*dQyfOpFWmSxrmdOcQgW6OQ.jpeg" width="480" height="225">
 
+**Note: The software is still under active development and not
+feature complete or ready for consumption by anyone other than
+software developers.**
+
 Steganography is used to hide information. WAVE-Steganography can be used
 to hide data (a "secret") inside a WAV file (a "cover"). This
 technique is based on algorithms described
