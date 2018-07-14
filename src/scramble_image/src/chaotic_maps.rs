@@ -24,6 +24,7 @@ pub struct HenonMapParameters {
 }
 
 
+
 #[derive(Clone, Copy)]
 pub enum ChaoticMapParameters{
     ArnoldCatMapParameters{a: i32},
@@ -36,14 +37,24 @@ pub enum ChaoticMapType{
 }
 
 
+
 impl ArnoldCatMap {
     pub fn transform_image(&self, mut image: &image::DynamicImage) {
         println!("transforming image (Arnold)");
     }
 }
-
 impl HenonMap {
     pub fn transform_image(&self, mut image: &image::DynamicImage) {
         println!("transforming image (Henon)");
+    }
+}
+impl ChaoticMapType {
+    pub fn whoami(&self) -> String{
+        match * self {
+            ArnoldCatMap => format!("ArnoldCatMap"),
+            HenonMap => format!("HenonMap"),
+            ChaoticMapType => format!("ChaoticMapType"),
+            _ => format!("NULL")
+        }
     }
 }

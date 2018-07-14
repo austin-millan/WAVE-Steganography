@@ -22,4 +22,5 @@ fn main() {
     // Using manual scoping of enum
     let henon_enum = ChaoticMapType::HenonMap(henon_params);
     let arnold_enum = ChaoticMapType::ArnoldCatMap(arnold_params);
+    println!("whoami: {:?}", henon_enum.whoami());
 }
