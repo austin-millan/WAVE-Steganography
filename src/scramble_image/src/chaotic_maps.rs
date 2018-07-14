@@ -1,83 +1,49 @@
-/***********************************/
 extern crate image;
 
 use self::image::*;
-#[allow(unused_imports)]
 use std::fs::File;
-#[allow(unused_imports)]
 use std::path::Path;
 use std::vec::*;
-/***********************************/
 
+
+#[derive(Clone, Copy)]
 pub struct ArnoldCatMap  {
-    pub image: image::DynamicImage,
-    pub parameters: Vec<MapParameterValue>
+    pub parameters: ArnoldCatMapParameters
 }
-
+#[derive(Clone, Copy)]
 pub struct HenonMap {
-    pub image: image::DynamicImage,
-    pub parameters: Vec<MapParameterValue>
+    pub parameters: HenonMapParameters
 }
-
-#[derive(Copy, Clone)]
-pub enum ChaoticMaps {
-   ArnoldCatMap(),
-   HenonMap()
+#[derive(Clone, Copy)]
+pub struct ArnoldCatMapParameters {
+    pub val: i32
 }
-
-pub enum MapParameterValue{
-    Integer(i64),
-    UInteger(u64),
-    Float(f64)
+#[derive(Clone, Copy)]
+pub struct HenonMapParameters {
+    pub val: i32
 }
 
 
-impl ChaoticMaps {
-    pub fn push_parameter(self, param: MapParameterValue) {
-        println!("inside push_parameter");
+#[derive(Clone, Copy)]
+pub enum ChaoticMapParameters{
+    ArnoldCatMapParameters{a: i32},
+    HenonMapParameters{a: i32}
+}
+#[derive(Clone, Copy)]
+pub enum ChaoticMapType{
+    ArnoldCatMap(ArnoldCatMapParameters),
+    HenonMap(HenonMapParameters)
+}
+
+
+impl ArnoldCatMap {
+    pub fn transform_image(&self, mut image: &image::DynamicImage) {
+        println!("transforming image (Arnold)");
     }
 }
 
-
-pub trait TransformImage {
-    fn transform_image(&self, img: self::image::DynamicImage) -> self::image::DynamicImage;
-    // fn push_parameter(self, param: MapParameterValue);
-}
-
-///// Implement the Transform trait for the Struct ArnoldCatMap.
-//impl TransformImage for ArnoldCatMap <self::image::DynamicImage> {
-//    fn transform_image(&self, self::DynamicImage) {
-//
-//    }
-//    #[allow(dead_code)]
-//    fn transform_image(&self, img: self::image::DynamicImage) -> self::image::DynamicImage {
-//        println!("transforming image");
-//        println!("Image Dimensions: {:?}", img.dimensions());
-//        println!("Image Color: {:?}", img.color());
-//
-//
-////        let (_x, _y) = img.dimensions();
-////        let img_buf = img.as_mut_rgb8().unwrap();
-////        let mut v: Vec<(i32, f32)> = Vec::new();
-////        v.push((4, 0.4));
-////        v.push((5, 0.5));
-////        println!("Vector contents: {:?}", v);
-//        img
-//    }
-//}
-
-impl TransformImage for ChaoticMaps {
-    #[allow(dead_code)]
-    fn transform_image(&self, img: self::image::DynamicImage) -> self::image::DynamicImage {
-        println!("transforming image");
-        println!("Image Dimensions: {:?}", img.dimensions());
-        println!("Image Color: {:?}", img.color());
-//        let (_x, _y) = img.dimensions();
-//        let img_buf = img.as_mut_rgb8().unwrap();
-//        let mut v: Vec<(i32, f32)> = Vec::new();
-//        v.push((4, 0.4));
-//        v.push((5, 0.5));
-//        println!("Vector contents: {:?}", v);
-        img
+impl HenonMap {
+    pub fn transform_image(&self, mut image: &image::DynamicImage) {
+        println!("transforming image (Henon)");
     }
 }
