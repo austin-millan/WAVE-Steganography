@@ -5,3 +5,4 @@ authors = ["austin-millan <austin.millan@protonmail.com>"]
 
 [dependencies]
 image = "*"
+derive_builder = "*"

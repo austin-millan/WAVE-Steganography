@@ -4,63 +4,61 @@ use self::image::*;
 use std::fs::File;
 use std::path::Path;
 use std::vec::*;
+use super::derive_builder;
 
 
-#[derive(Clone, Copy)]
 pub struct ArnoldCatMap  {
     pub parameters: ArnoldCatMapParameters
 }
-#[derive(Clone, Copy)]
+
 pub struct HenonMap {
     pub parameters: HenonMapParameters
 }
-#[derive(Clone, Copy)]
+
 pub struct SingerMap {
     pub parameters: SingerMapParameters
 }
-#[derive(Clone, Copy)]
+
+#[derive(Default, Builder, Clone, Copy, Debug)]
+#[builder(setter(into))]
 pub struct ArnoldCatMapParameters {
-    pub val: i32
-}
-#[derive(Clone, Copy)]
-pub struct HenonMapParameters {
-    pub val: i32
-}
-#[derive(Clone, Copy)]
-pub struct SingerMapParameters {
+    #[builder(default = "42")]
     pub val: i32
 }
 
+#[derive(Default, Builder, Clone, Copy, Debug)]
+#[builder(setter(into))]
+pub struct HenonMapParameters {
+    #[builder(default = "42")]
+    pub val: i32
+}
+
+#[derive(Default, Builder, Clone, Copy, Debug)]
+#[builder(setter(into))]
+pub struct SingerMapParameters {
+    #[builder(default = "42")]
+    pub val: i32
+}
 
 #[derive(Clone, Copy)]
 pub enum ChaoticMapParameters {
-    ArnoldCatMapParameters{val: i32},
-    HenonMapParameters{val: i32},
-    SingerMapParameters{val: i32}
+    ArnoldCatMapParameters{
+        val: i32
+    },
+    HenonMapParameters{
+        val: i32
+    },
+    SingerMapParameters{
+        val: i32
+    }
 }
 #[derive(Clone, Copy)]
 pub enum ChaoticMapType {
-    ArnoldCatMap {
-        parameters: ArnoldCatMapParameters
-    },
-    HenonMap{
-        parameters: HenonMapParameters
-    },
-    SingerMapParameters{
-        parameters: SingerMapParameters
-    }
+    ArnoldCatMap {parameters: ArnoldCatMapParameters },
+    HenonMap{parameters: HenonMapParameters },
+    SingerMapParameters{parameters: SingerMapParameters }
 }
 
-impl ChaoticMapType {
-    pub fn whoami(&self) -> String {
-        match * self {
-            ChaoticMapType::ArnoldCatMap{parameters: ref a} => format!("ArnoldCatMap"),
-            ChaoticMapType::HenonMap{parameters: ref a} => format!("HenonMap"),
-            ChaoticMapType::SingerMapParameters{parameters: ref a} => format!("SingerMapParameters"),
-            _ => format!("NULL")
-        }
-    }
-}
 
 impl ArnoldCatMap {
     pub fn transform_image(&self, mut image: &image::DynamicImage) {
@@ -89,3 +87,19 @@ impl HenonMap {
     // ...fill in later
     }
 }
+
+impl ChaoticMapType {
+    pub fn whoami(&self) -> String {
+        match * self {
+            ChaoticMapType::ArnoldCatMap{parameters: ref a} => format!("ArnoldCatMap"),
+            ChaoticMapType::HenonMap{parameters: ref a} => format!("HenonMap"),
+            ChaoticMapType::SingerMapParameters{parameters: ref a} => format!("SingerMapParameters"),
+            _ => format!("NULL")
+        }
+    }
+}
+
+
+//fn main() {
+//    let henon_params_built:  HenonMapParametersBuilder::default();
+//}
