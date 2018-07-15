@@ -1,27 +1,50 @@
+// For dev
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(unused_must_use)]
+#![allow(unused_mut)]
+
 extern crate image;
 #[macro_use]
 extern crate derive_builder;
 
 mod chaotic_maps;
 
-#[allow(unused_imports)]
 use self::image::DynamicImage;
-#[allow(unused_imports)]
 use chaotic_maps::*;
-#[allow(unused_imports)]
+use std::path::*;
 use std::path::Path;
-#[allow(unused_imports)]
 use std::fs::File;
-#[allow(unused_imports)]
 use std::vec::*;
 
+fn test_henon(path: &Path) {
+    // Get input image from path
+    let img_png_path = String::from("examples/output_henon_image.png");
+    let img_jpg_path = String::from("examples/output_henon_image.jpg");
+    let mut img = image::open(path).unwrap();
 
-fn test_henon() {
-    // Use sample image
-    let mut img = image::open(&Path::new(
-        &String::from("examples/secret_image.jpg"))).unwrap();
+    // Get extension, and determine how to save file based on this extension
+    let extension = match path.extension() {
+        None => "",
+        Some(os_str) => {
+            match os_str.to_str() {
+                Some("png") => "png",
+                Some("jpg") => "jpg",
+                _ => "NOT SUPPORTED",
+            }
+        }
+    };
 
-    // Build parameters
+    let dest_path = {
+        match extension {
+            "png" => Path::new(&img_png_path),
+            "jpg" => Path::new(&img_jpg_path),
+            _ => panic!("Unexpected invalid token {:?}", extension)
+        }
+    };
+
+    // Parameter builder for mapping
     let henon_params = HenonMapParametersBuilder::default().
         build()
         .unwrap();
@@ -29,29 +52,65 @@ fn test_henon() {
     // Initialize mapping algorithm with parameters
     let henon = HenonMap{parameters: henon_params};
 
-    // Transform sample image
-    let transformed = henon.transform_image( &mut img);
+    // Transform sample images
+    henon.transform_image( &mut img, &dest_path);
 
-    transformed.save("examples/output_henon.jpg").unwrap();
+    // Test differences between input image and transformed image.
+    let diff = image_diff(&path,&dest_path); // generated output
+    println!("diff <input, output>: {:?} ({:?})", diff, extension);
+
 }
 
-fn test_arnold() {
-    // Use sample image
-    let mut img = image::open(&Path::new(
-        &String::from("examples/secret_image.jpg"))).unwrap();
+fn test_arnold(path: &Path) {
+    // Get input image from path
+    let img_png_path = String::from("examples/output_arnold_image.png");
+    let img_jpg_path = String::from("examples/output_arnold_image..jpg");
+    let mut img = image::open(path).unwrap();
 
-    // Build parameters
-    let arnold_params = ArnoldCatMapParametersBuilder::default().
+    // Get extension, and determine how to save file based on this extension
+    let extension = match path.extension() {
+        None => "",
+        Some(os_str) => {
+            match os_str.to_str() {
+                Some("png") => "png",
+                Some("jpg") => "jpg",
+                _ => "NOT SUPPORTED",
+            }
+        }
+    };
+
+    let dest_path = {
+        match extension {
+            "png" => Path::new(&img_png_path),
+            "jpg" => Path::new(&img_jpg_path),
+            _ => panic!("Unexpected invalid token {:?}", extension)
+        }
+    };
+
+    // Parameter builder for mapping
+    let henon_params = HenonMapParametersBuilder::default().
         build()
         .unwrap();
 
     // Initialize mapping algorithm with parameters
-    let arnold = ArnoldCatMap{parameters: arnold_params};
+    let henon = HenonMap{parameters: henon_params};
 
-    // Transform sample image
-    // arnold.transform_image(&img);
+    // Transform sample images
+    henon.transform_image( &mut img, &dest_path);
+
+    // Test differences between input image and transformed image.
+    let diff = image_diff(&path,&dest_path); // generated output
+    println!("diff <input, output>: {:?} ({:?})", diff, extension);
 }
 
 fn main() {
-    test_henon();
+    // Input Image paths
+    let str_path_jpg = String::from("examples/secret_image.jpg");
+    let str_path_png = String::from("examples/secret_image.png");
+    let secret_path_jpg = Path::new(&str_path_jpg);
+    let secret_path_png = Path::new(&str_path_png);
+
+    println!("Test Henon");
+    test_henon(secret_path_jpg); // do jpg
+    test_henon(secret_path_png); // do png
 }

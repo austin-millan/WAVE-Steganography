@@ -1,18 +1,22 @@
+// For dev
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(unused_must_use)]
+#![allow(unused_mut)]
+
 extern crate image;
+extern crate rand;
+extern crate imageproc;
 
-#[allow(unused_imports)]
-use self::image::*;
-#[allow(unused_imports)]
-use std::fs::File;
-#[allow(unused_imports)]
-use std::path::Path;
-#[allow(unused_imports)]
-use std::vec::*;
-#[allow(unused_imports)]
-use std::borrow::Borrow;
-#[allow(unused_imports)]
 use super::derive_builder;
-
+use self::image::*;
+use self::rand::Rng;
+use std::fs::File;
+use std::path::Path;
+use std::vec::*;
+use std::borrow::Borrow;
+use std::ops::*;
 
 pub struct ArnoldCatMap  {
     pub parameters: ArnoldCatMapParameters
@@ -74,26 +78,49 @@ impl ArnoldCatMap {
         let transformed = img.borrow();
         &transformed
     }
-
     pub fn is_valid(&self) -> bool {
         // verify parameters field is of correct type
-        { match self.parameters { ArnoldCatMapParameters{val: ref a} => true } }
+        { match self.parameters { ArnoldCatMapParameters{val: ref _a} => true } }
         // ...fill in later
     }
 }
 
 impl HenonMap {
-    pub fn transform_image<'a>(&self, img: &'a image::DynamicImage) -> &'a image::DynamicImage{
-        println!("HenonMap::transform_image(...)");
+    pub fn transform_image<'a>(&self, img: &'a mut image::DynamicImage, dest_path: &Path) {
+    //pub fn transform_image<'a>(&self, img: &'a mut image::DynamicImage) -> &'a image::DynamicImage{
+        let color = img.color();
         let res = self.is_valid();
-        let transformed = img.borrow();
-        &transformed
-    }
+        let mut img1 = DynamicImage::as_mut_rgb8(img).unwrap();
+        let (width, height) = img1.dimensions();
 
+        println!("Original color: {:?}", color);
+        // iterates over the pixels of an image, assigning random values to each pixel
+        /*
+        for (x, y, pixel) in img1.enumerate_pixels_mut() { // valid
+            let rand_i: u8 = rand::thread_rng().gen();
+            let mut pixel_copy = pixel;
+            *pixel_copy = image::Rgb([rand_i;3]);
+        }
+        img1.save("examples/test_henon.png");
+        */
+
+        /*
+        for x in 0..width { // not so valid
+            for y in 0..height {
+                let px = img.get_pixel(x, y).map(|v| v + 4);
+                noisy.put_pixel(x, y, px);
+                //println!("{:?},{:?}", x, y);
+            }
+        }
+        */
+
+        // Save buffer to destination file.
+        img1.save(dest_path);
+}
     pub fn is_valid(&self) -> bool {
-    // verify parameters field is of correct type
-    { match self.parameters { HenonMapParameters{val: ref a} => true } }
-    // ...fill in later
+        // verify parameters field is of correct type
+        { match self.parameters { HenonMapParameters{val: ref _a} => true } }
+        // ...fill in later
     }
 }
 
@@ -101,10 +128,18 @@ impl HenonMap {
 impl ChaoticMapType {
     pub fn whoami(&self) -> String {
         match * self {
-            ChaoticMapType::ArnoldCatMap{parameters: ref a} => format!("ArnoldCatMap"),
-            ChaoticMapType::HenonMap{parameters: ref a} => format!("HenonMap"),
-            ChaoticMapType::SingerMapParameters{parameters: ref a} => format!("SingerMapParameters"),
-            _ => format!("NULL")
+            ChaoticMapType::ArnoldCatMap{parameters: ref _a} => format!("ArnoldCatMap"),
+            ChaoticMapType::HenonMap{parameters: ref _a} => format!("HenonMap"),
+            ChaoticMapType::SingerMapParameters{parameters: ref _a} => format!("SingerMapParameters"),
+            _ => format!("")
         }
     }
+}
+
+/// This function returns the amount of difference between two images as a float.
+/// Based on: https://gkbrk.com/2018/01/evolving-line-art/
+pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
+    imageproc::stats::root_mean_squared_error(
+        &image::open(&l_path).unwrap(),
+        &image::open(&r_path).unwrap())
 }
