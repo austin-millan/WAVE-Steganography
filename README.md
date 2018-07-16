@@ -32,18 +32,31 @@ Project dependencies are managed by Cargo, see
 
 ## Install / Build
 
-To download the source code from Git:
+This project is currently only available through Github (not [crates.io](https://crates.io/))
+
+To download using Git:
 
 `$ git clone https://github.com/austin-millan/WAVE-Steganography.git`
 
-To download dependencies, run the following from the project root directory:
+To build (and download dependencies):
 
 `$ cargo build`
+
+The first build will take a few minutes as it fetches dependencies from
+[crates.io](https://crates.io/).
+
+```
+$ time cargo build
+...
+real    2m11.613s
+user    4m52.722s
+sys     0m37.476s
+```
 
 
 ## Test
 
-(not done)
+**Note: as of 7/15 no tests exist yet.**
 
 To run all available tests, run the following from the project root directory:
 
@@ -51,9 +64,11 @@ To run all available tests, run the following from the project root directory:
 
 ## Usage
 
-**Examples**
+**Run scramble_image
+[`main.rs`](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/scramble_image/src/main.rs):**
 
-(not done)
+`$ cargo run -p scramble_image`
+
 
 ## Contributing
 Please see
