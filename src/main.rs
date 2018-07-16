@@ -1,14 +1,29 @@
-#[allow(unused_imports)]
+// For dev
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(unused_must_use)]
+#![allow(unused_mut)]
+
+#[macro_use]
+extern crate derive_builder;
+
 extern crate image;
-#[allow(unused_imports)]
 extern crate scramble_image;
-#[allow(unused_imports)]
+
 use std::path::Path;
+use scramble_image::chaotic_maps::*;
 
 fn main() {
     // Input File
     let file = String::from("examples/secret_image.jpg");
     let mut img = image::open(&Path::new(&file)).unwrap();
+
+    // Parameter builder for mapping
+//    let henon_param = ChaoticMapParameters::HenonMapParametersBuilder()
+//        .build()
+//        .unwrap();
+
 
     // Output File
     // let fout = &mut File::create(&Path::new("examples/output.png")).unwrap();

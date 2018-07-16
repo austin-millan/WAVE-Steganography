@@ -5,14 +5,16 @@
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
 
+#[macro_use] extern crate derive_builder;
 extern crate image;
-#[macro_use]
-extern crate derive_builder;
+extern crate scramble_image;
+extern crate rand;
+extern crate imageproc;
 
-mod chaotic_maps;
+pub mod chaotic_maps;
 
-use self::image::DynamicImage;
 use chaotic_maps::*;
+use image::*;
 use std::path::*;
 use std::path::Path;
 use std::fs::File;

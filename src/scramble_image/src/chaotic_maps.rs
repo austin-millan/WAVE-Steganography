@@ -5,13 +5,9 @@
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
 
-extern crate image;
-extern crate rand;
-extern crate imageproc;
-
-use super::derive_builder;
-use self::image::*;
-use self::rand::Rng;
+use image::*;
+use rand::Rng;
+use imageproc;
 use std::fs::File;
 use std::path::Path;
 use std::vec::*;
@@ -72,7 +68,7 @@ pub enum ChaoticMapType {
 
 
 impl ArnoldCatMap {
-    pub fn transform_image<'a>(&self, img: &'a image::DynamicImage) -> &'a image::DynamicImage{
+    pub fn transform_image<'a>(&self, img: &'a DynamicImage) -> &'a DynamicImage{
         println!("ArnoldCatMap::transform_image(...)");
         let res = self.is_valid();
         let transformed = img.borrow();
@@ -86,7 +82,7 @@ impl ArnoldCatMap {
 }
 
 impl HenonMap {
-    pub fn transform_image<'a>(&self, img: &'a mut image::DynamicImage, dest_path: &Path) {
+    pub fn transform_image<'a>(&self, img: &'a mut DynamicImage, dest_path: &Path) {
     //pub fn transform_image<'a>(&self, img: &'a mut image::DynamicImage) -> &'a image::DynamicImage{
         let color = img.color();
         let res = self.is_valid();
@@ -136,10 +132,10 @@ impl ChaoticMapType {
     }
 }
 
-/// This function returns the amount of difference between two images as a float.
-/// Based on: https://gkbrk.com/2018/01/evolving-line-art/
+//This function returns the amount of difference between two images as a float.
+//Based on: https://gkbrk.com/2018/01/evolving-line-art/
 pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
     imageproc::stats::root_mean_squared_error(
-        &image::open(&l_path).unwrap(),
-        &image::open(&r_path).unwrap())
+        &open(&l_path).unwrap(),
+        &open(&r_path).unwrap())
 }

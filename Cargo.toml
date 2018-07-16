@@ -3,13 +3,15 @@ name = "wave-steganography"
 version = "0.1.0"
 authors = ["austin-millan <austin.millan@protonmail.com>"]
 
-[workspace]
-path = "src/scramble_image"
-
-[dependencies.scramble_image]
-path = "src/scramble_image"
-
 [dependencies]
+#scramble_image = {path = "src/scramble_image"}
 dwt = "0.5.2"
 image = "*"
 rand = "*"
+derive_builder = "*"
+
+[workspace]
+members = ["src/scramble_image"]
+
+[dependencies.scramble_image]
+path = "src/scramble_image"

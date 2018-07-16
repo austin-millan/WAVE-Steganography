@@ -1,8 +1,6 @@
-
-
-
-
-// fn print_bit(n: u8) {}
-// fn print_byte() {} ///  param: size, param: data
-
-
+// For dev
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(unused_must_use)]
+#![allow(unused_mut)]
