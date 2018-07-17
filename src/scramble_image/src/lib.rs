@@ -6,7 +6,6 @@
 #![allow(unused_mut)]
 
 #[macro_use] extern crate derive_builder;
-
 extern crate image;
 extern crate rand;
 extern crate imageproc;

@@ -5,14 +5,20 @@
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
 
+
+extern crate rand;
+
 use image::*;
-use rand::Rng;
+use image::{GenericImage, Pixel};
+use rand::{Rng};
 use imageproc;
 use std::fs::File;
 use std::path::Path;
 use std::vec::*;
 use std::borrow::Borrow;
 use std::ops::*;
+use image::Pixels;
+
 
 pub struct ArnoldCatMap  {
     pub parameters: ArnoldCatMapParameters
@@ -68,11 +74,23 @@ pub enum ChaoticMapType {
 
 
 impl ArnoldCatMap {
-    pub fn transform_image<'a>(&self, img: &'a DynamicImage) -> &'a DynamicImage{
-        println!("ArnoldCatMap::transform_image(...)");
-        let res = self.is_valid();
-        let transformed = img.borrow();
-        &transformed
+    pub fn transform_image(&self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
+        let valid = self.is_valid();  // use later when it's implemented
+        let color = img.color();
+        let (width, height) = img.dimensions();
+        let mut noisy = img.brighten(-25);
+        let mut rng = super::rand::thread_rng();
+
+        let (width, height) = img.dimensions();
+        for x in 0..(width) {
+            for y in 0..(height) {
+                let offset = rng.gen::<u8>();
+                let px = img.get_pixel(x, y).map(|v| if v <= 255 - offset { v + offset } else { 255 });
+                noisy.put_pixel(x, y, px);
+            }
+        }
+        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
+        noisy
     }
     pub fn is_valid(&self) -> bool {
         // verify parameters field is of correct type
@@ -81,45 +99,34 @@ impl ArnoldCatMap {
     }
 }
 
+
+/// Henon transformation using DynamicImage
 impl HenonMap {
-    pub fn transform_image<'a>(&self, img: &'a mut DynamicImage, dest_path: &Path) {
-    //pub fn transform_image<'a>(&self, img: &'a mut image::DynamicImage) -> &'a image::DynamicImage{
+    pub fn transform_image(&self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
+        let valid = self.is_valid();  // use later when it's implemented
         let color = img.color();
-        let res = self.is_valid();
-        let mut img1 = DynamicImage::as_mut_rgb8(img).unwrap();
-        let (width, height) = img1.dimensions();
+        let (width, height) = img.dimensions();
+        let mut noisy = img.brighten(-25);
+        let mut rng = rand::thread_rng();
 
-        println!("Original color: {:?}", color);
-        // iterates over the pixels of an image, assigning random values to each pixel
-        /*
-        for (x, y, pixel) in img1.enumerate_pixels_mut() { // valid
-            let rand_i: u8 = rand::thread_rng().gen();
-            let mut pixel_copy = pixel;
-            *pixel_copy = image::Rgb([rand_i;3]);
-        }
-        img1.save("examples/test_henon.png");
-        */
-
-        /*
-        for x in 0..width { // not so valid
-            for y in 0..height {
-                let px = img.get_pixel(x, y).map(|v| v + 4);
+        let (width, height) = img.dimensions();
+        for x in 0..(width) {
+            for y in 0..(height) {
+                let offset = rng.gen::<u8>();
+                let px = img.get_pixel(x, y).map(|v| if v <= 255 - offset { v + offset } else { 255 });
                 noisy.put_pixel(x, y, px);
-                //println!("{:?},{:?}", x, y);
             }
         }
-        */
+        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
+        noisy
+    }
 
-        // Save buffer to destination file.
-        img1.save(dest_path);
-}
     pub fn is_valid(&self) -> bool {
         // verify parameters field is of correct type
         { match self.parameters { HenonMapParameters{val: ref _a} => true } }
         // ...fill in later
     }
 }
-
 
 impl ChaoticMapType {
     pub fn whoami(&self) -> String {
@@ -132,8 +139,8 @@ impl ChaoticMapType {
     }
 }
 
-//This function returns the amount of difference between two images as a float.
-//Based on: https://gkbrk.com/2018/01/evolving-line-art/
+/// This function returns the amount of difference between two images as a float.
+/// Based on: https://gkbrk.com/2018/01/evolving-line-art/
 pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
     imageproc::stats::root_mean_squared_error(
         &open(&l_path).unwrap(),

@@ -20,13 +20,15 @@ use std::path::Path;
 use std::fs::File;
 use std::vec::*;
 
+
+// copy pasta
 fn test_henon(path: &Path) {
     // Get input image from path
     let img_png_path = String::from("examples/output_henon_image.png");
     let img_jpg_path = String::from("examples/output_henon_image.jpg");
     let mut img = image::open(path).unwrap();
 
-    // Get extension, and determine how to save file based on this extension
+    // Get extension from path, and determine how to save file based on this extension.
     let extension = match path.extension() {
         None => "",
         Some(os_str) => {
@@ -40,36 +42,38 @@ fn test_henon(path: &Path) {
 
     let dest_path = {
         match extension {
-            "png" => Path::new(&img_png_path),
-            "jpg" => Path::new(&img_jpg_path),
+            "png" => {
+                // println!("Destination path is PNG.");
+                Path::new(&img_png_path)
+            },
+            "jpg" => {
+                // println!("Destination path is JPG.");
+                Path::new(&img_jpg_path)
+            },
             _ => panic!("Unexpected invalid token {:?}", extension)
         }
     };
 
     // Parameter builder for mapping
-    let henon_params = HenonMapParametersBuilder::default().
-        build()
+    let henon_params = HenonMapParametersBuilder::default()
+        .build()
         .unwrap();
 
-    // Initialize mapping algorithm with parameters
-    let henon = HenonMap{parameters: henon_params};
-
     // Transform sample images
-    henon.transform_image( &mut img, &dest_path);
+    HenonMap{parameters: henon_params}.transform_image(img, &dest_path).save(dest_path);
 
-    // Test differences between input image and transformed image.
-    let diff = image_diff(&path,&dest_path); // generated output
-    println!("diff <input, output>: {:?} ({:?})", diff, extension);
+    // Test differences between original and transformed image.
+    println!("diff <input, output>: {:?} ({:?})", image_diff(&path,&dest_path), extension);
 
 }
 
 fn test_arnold(path: &Path) {
     // Get input image from path
-    let img_png_path = String::from("examples/output_arnold_image.png");
-    let img_jpg_path = String::from("examples/output_arnold_image..jpg");
+    let img_png_path = String::from("examples/output_henon_image.png");
+    let img_jpg_path = String::from("examples/output_henon_image.jpg");
     let mut img = image::open(path).unwrap();
 
-    // Get extension, and determine how to save file based on this extension
+    // Get extension from path, and determine how to save file based on this extension.
     let extension = match path.extension() {
         None => "",
         Some(os_str) => {
@@ -83,26 +87,28 @@ fn test_arnold(path: &Path) {
 
     let dest_path = {
         match extension {
-            "png" => Path::new(&img_png_path),
-            "jpg" => Path::new(&img_jpg_path),
+            "png" => {
+                // println!("Destination path is PNG.");
+                Path::new(&img_png_path)
+            },
+            "jpg" => {
+                // println!("Destination path is JPG.");
+                Path::new(&img_jpg_path)
+            },
             _ => panic!("Unexpected invalid token {:?}", extension)
         }
     };
 
     // Parameter builder for mapping
-    let henon_params = HenonMapParametersBuilder::default().
-        build()
+    let arnold_params = ArnoldCatMapParametersBuilder::default()
+        .build()
         .unwrap();
 
-    // Initialize mapping algorithm with parameters
-    let henon = HenonMap{parameters: henon_params};
-
     // Transform sample images
-    henon.transform_image( &mut img, &dest_path);
+    ArnoldCatMap{parameters: arnold_params}.transform_image(img, &dest_path).save(dest_path);
 
-    // Test differences between input image and transformed image.
-    let diff = image_diff(&path,&dest_path); // generated output
-    println!("diff <input, output>: {:?} ({:?})", diff, extension);
+    // Test differences between original and transformed image.
+    println!("diff <input, output>: {:?} ({:?})", image_diff(&path,&dest_path), extension);
 }
 
 fn main() {
@@ -112,7 +118,8 @@ fn main() {
     let secret_path_jpg = Path::new(&str_path_jpg);
     let secret_path_png = Path::new(&str_path_png);
 
-    println!("Test Henon");
-    test_henon(secret_path_jpg); // do jpg
+    //println!("Test Henon (JPG)");
+    //test_henon(secret_path_jpg); // do jpg
+    println!("Test Henon (PNG)");
     test_henon(secret_path_png); // do png
 }

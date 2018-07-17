@@ -10,6 +10,7 @@ extern crate derive_builder;
 
 extern crate image;
 extern crate scramble_image;
+extern crate rand;
 
 use std::path::Path;
 use scramble_image::chaotic_maps::*;
