@@ -43,7 +43,7 @@ pub struct ArnoldCatMapParameters {
 #[builder(setter(into))]
 pub struct HenonMapParameters {
     #[builder(default = "42")]
-    pub val: i32
+    pub a: i32
 }
 
 #[derive(Default, Builder, Clone, Copy, Debug)]
@@ -74,7 +74,7 @@ pub enum ChaoticMapType {
 
 
 impl ArnoldCatMap {
-    pub fn transform_image(&self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
+    pub fn transform_image(&mut self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
         let valid = self.is_valid();  // use later when it's implemented
         let color = img.color();
         let (width, height) = img.dimensions();
@@ -102,19 +102,28 @@ impl ArnoldCatMap {
 
 /// Henon transformation using DynamicImage
 impl HenonMap {
-    pub fn transform_image(&self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
+    pub fn transform_image(&mut self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
         let valid = self.is_valid();  // use later when it's implemented
         let color = img.color();
         let (width, height) = img.dimensions();
         let mut noisy = img.brighten(-25);
         let mut rng = rand::thread_rng();
 
-        let (width, height) = img.dimensions();
+        // let (width, height) = img.dimensions();
         for x in 0..(width) {
             for y in 0..(height) {
                 let offset = rng.gen::<u8>();
-                let px = img.get_pixel(x, y).map(|v| if v <= 255 - offset { v + offset } else { 255 });
-                noisy.put_pixel(x, y, px);
+                let px = img.get_pixel(x, y);
+                self.parameters.a += 1;
+                println!("a: {:?}", self.parameters.a);
+                // let px = img.get_pixel(x, y).map(|v| if v <= 255 - offset { v + offset } else { 255 });
+
+                // xN = y + 1 - 1.4 * x**2
+                // yN = 0.3 * x
+
+
+
+                // noisy.put_pixel(x, y, px);
             }
         }
         // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
@@ -123,7 +132,7 @@ impl HenonMap {
 
     pub fn is_valid(&self) -> bool {
         // verify parameters field is of correct type
-        { match self.parameters { HenonMapParameters{val: ref _a} => true } }
+        { match self.parameters { HenonMapParameters{a: ref _a} => true } }
         // ...fill in later
     }
 }

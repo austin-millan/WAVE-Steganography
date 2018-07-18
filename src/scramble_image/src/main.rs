@@ -60,7 +60,10 @@ fn test_henon(path: &Path) {
         .unwrap();
 
     // Transform sample images
-    HenonMap{parameters: henon_params}.transform_image(img, &dest_path).save(dest_path);
+    let mut henon = HenonMap{parameters: henon_params};
+    // let mut henon = ChaoticMapType::HenonMap{parameters: henon_params};
+    henon.transform_image(img, &dest_path).save(dest_path);
+    // HenonMap{parameters: henon_params}.transform_image(img, &dest_path).save(dest_path);
 
     // Test differences between original and transformed image.
     println!("diff <input, output>: {:?} ({:?})", image_diff(&path,&dest_path), extension);
