@@ -13,6 +13,7 @@ use image::{GenericImage, Pixel};
 use rand::{Rng};
 use imageproc;
 use std::fs::File;
+use std::io::prelude::*;
 use std::path::Path;
 use std::vec::*;
 use std::borrow::Borrow;
@@ -116,16 +117,34 @@ impl HenonMap {
         let henon_map = self.generate_map(&img);
         let image_matrix = self.get_image_matrix(&img);
 
-        println!("Henon Map: {:?}", henon_map);
-        println!("Image Matrix: {:?}", image_matrix);
+        let mut henon_file = File::create("map_data/henon_map.txt").expect("Unable to create file");
+        let mut image_file = File::create("map_data/image_file.txt").expect("Unable to create file");
+
+        for i in 0..henon_map.len(){
+            println!("Henon.index({}) {:?}, length: {}", i, henon_map.index(i), henon_map.index(i).len());
+            thread::sleep(time::Duration::from_millis(200));
+        }
+
+//        for i in henon_map {
+//            write!(henon_file, "{:?}", i);
+//        }
+//        for i in image_matrix.index(i) {
+//            write!(image_file, "{:?}", i);
+//        }
+
+        // println!("Henon Map: {:?}", henon_map); // println!("Image Matrix: {:?}", image_matrix); // println!("Henon Map: {:?}", henon_map.index(1));
+        //println!("Image matrix size: {:?}", image_matrix.len());
+        //println!("Henon map size: {:?}", henon_map.len());
+
+        // println!("Image matrix: {:?}", image_matrix);
+
 
         for w in 0..(width) {
             for h in 0..(height) {
-                let px = img.get_pixel(w, h);
-                // noisy.put_pixel(x, y, px);
+                // let px = img.get_pixel(w, h);
             }
         }
-        let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
+        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
         noisy
     }
 
@@ -146,17 +165,16 @@ impl HenonMap {
     }
 
     /// For SQUARE images. I'm not sure of implementation for other sizes.
-    pub fn generate_map(&mut self, mut img: &DynamicImage) -> Vec<Vec<i64>> {
+    /// Generates henon map correctly for square images.
+    pub fn generate_map(&mut self, mut img: &DynamicImage) -> Vec<Vec<u8>> {
         let (width, height) = img.dimensions();
-        let mut x = 0.6 as f64;
-        let mut y = 0.2 as f64;
+        let mut x = 0.1 as f64;
+        let mut y = 0.1 as f64;
 
         let mut sequence_size = width * height * 8;
         let mut bit_sequence = Vec::new();
         let mut byte_array = Vec::new();
         let mut t_img_matrix = Vec::new();
-
-        println!("Bit Sequence Size: {:?}", sequence_size);
 
         for i in 0..sequence_size { // println!("i: {}", i);
             // Henon formula
@@ -169,8 +187,8 @@ impl HenonMap {
 
             // Determine bit value to be push into bit_sequence.
             let mut bit = 0;
-            if x_n < 0.3992 {bit = 0 as i64}
-            else {bit = 1 as i64}
+            if x_n < 0.3992 {bit = 0 as u8}
+            else {bit = 1 as u8}
             bit_sequence.push(bit);
 
             // Convert current bit_sequence into a decimal value.
@@ -215,11 +233,10 @@ pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
         &open(&r_path).unwrap())
 }
 
-pub fn to_decimal(vect: Vec<i64>) -> i64 { // @todo: make more generic
-    let mut res: i64 = 0;
+pub fn to_decimal(vect: Vec<u8>) -> u8 { // @todo: make more generic
+    let mut res: u8 = 0;
     for item in vect.iter() {
-        // let c_item = *item as i64;
-        res = res * 2 + *item as i64;
+        res = res * 2 + *item as u8;
     }
     res
 }
