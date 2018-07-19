@@ -111,9 +111,10 @@ impl HenonMap {
     /// Wrapper
     pub fn transform_image(&mut self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
         let valid = self.is_valid();  // use later when it's implemented
-        let mut noisy = img.brighten(-25);
         let (width, height) = img.dimensions();
-        let henon_map = self.generate_map(img);
+        let mut noisy = img.brighten(0);
+        let henon_map = self.generate_map(&img);
+        let image_matrix = self.get_image_matrix(&img);
 
         for w in 0..(width) {
             for h in 0..(height) {
@@ -125,7 +126,23 @@ impl HenonMap {
         noisy
     }
 
-    pub fn generate_map(&mut self, mut img: DynamicImage) -> Vec<Vec<i64>>{
+    /// Returns a vector of vectors containing image pixel values
+    pub fn get_image_matrix(&mut self, img: &DynamicImage){
+        // let mut reference = img;
+        let mut image_matrix = Vec::new();
+        let (width, height) = img.dimensions();
+        for w in 0..(width) {  // for each row
+            let mut row = Vec::new();  // start with a fresh row vector.
+            for h in 0..(height) {
+                let px = img.get_pixel(w, h);  // get pixel
+                row.push(px.data);  // push pixel data (array of u8)
+            }
+            image_matrix.push(row);
+        }
+    }
+
+    /// For SQUARE images. I'm not sure of implementation for other sizes.
+    pub fn generate_map(&mut self, mut img: &DynamicImage) -> Vec<Vec<i64>> {
         let (width, height) = img.dimensions();
         let mut x = 0.6 as f64;
         let mut y = 0.2 as f64;
@@ -163,7 +180,7 @@ impl HenonMap {
             if (i % byte_array_size) == (byte_array_size - 1) {
                 t_img_matrix.push(byte_array.clone());
                 byte_array.clear();
-                thread::sleep(time::Duration::from_millis(5000));
+                // thread::sleep(time::Duration::from_millis(5000));
             }
         }
         t_img_matrix
