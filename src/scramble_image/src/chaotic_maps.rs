@@ -164,14 +164,17 @@ impl HenonMap {
         image_matrix
     }
 
-    /// For SQUARE images. I'm not sure of implementation for other sizes.
-    /// Generates henon map correctly for square images.
+    /// Generate key values using Henon map.
+    /// Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
     pub fn generate_map(&mut self, mut img: &DynamicImage) -> Vec<Vec<u8>> {
         let (width, height) = img.dimensions();
+
+        /// (1) choose the initial value of (X1,Y1) for Henon map
         let mut x = 0.1 as f64;
         let mut y = 0.1 as f64;
 
-        /// If the image size is m×n then the number of henon sequence will be 8×m×n
+        /// (2) If the image size is m×n then the number of henon sequence will be 8×m×n obtained by
+        /// henon equation (x_n, y_n below).
         let mut sequence_size = width * height * 8;  // correct
         let mut bit_sequence = Vec::new();
         let mut byte_array = Vec::new();
@@ -188,11 +191,13 @@ impl HenonMap {
 
             // Determine bit value to be push into bit_sequence.
             let mut bit = 0;
+            /// (3) Experimental analysis conclude that cut-off point, 0.3992, has been
+            /// determined so that the sequence is balanced.
             if x_n < 0.3992 {bit = 0 as u8}
             else {bit = 1 as u8}
             bit_sequence.push(bit);
 
-            // Convert current bit_sequence into a decimal value.
+            /// (4) Henon sequence is then reduced by combining each consecutive 8 bits into one decimal value.
             if i % 8 == 7 { // (e.g. 7%8, 15%8, 23%8, ...)
                 let mut decimal_bit_sequence = to_decimal(bit_sequence.clone());
                 byte_array.push(decimal_bit_sequence);
