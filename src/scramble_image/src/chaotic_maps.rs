@@ -171,7 +171,8 @@ impl HenonMap {
         let mut x = 0.1 as f64;
         let mut y = 0.1 as f64;
 
-        let mut sequence_size = width * height * 8;
+        /// If the image size is m×n then the number of henon sequence will be 8×m×n
+        let mut sequence_size = width * height * 8;  // correct
         let mut bit_sequence = Vec::new();
         let mut byte_array = Vec::new();
         let mut t_img_matrix = Vec::new();
