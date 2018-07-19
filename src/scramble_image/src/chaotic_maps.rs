@@ -116,6 +116,9 @@ impl HenonMap {
         let henon_map = self.generate_map(&img);
         let image_matrix = self.get_image_matrix(&img);
 
+        println!("Henon Map: {:?}", henon_map);
+        println!("Image Matrix: {:?}", image_matrix);
+
         for w in 0..(width) {
             for h in 0..(height) {
                 let px = img.get_pixel(w, h);
@@ -127,7 +130,7 @@ impl HenonMap {
     }
 
     /// Returns a vector of vectors containing image pixel values
-    pub fn get_image_matrix(&mut self, img: &DynamicImage){
+    pub fn get_image_matrix(&mut self, img: &DynamicImage) -> Vec<Vec<[u8; 4]>> {
         // let mut reference = img;
         let mut image_matrix = Vec::new();
         let (width, height) = img.dimensions();
@@ -139,6 +142,7 @@ impl HenonMap {
             }
             image_matrix.push(row);
         }
+        image_matrix
     }
 
     /// For SQUARE images. I'm not sure of implementation for other sizes.
