@@ -115,7 +115,9 @@ impl HenonMap {
         let (width, height) = img.dimensions();
         let mut noisy = img.brighten(0);
         let henon_map = self.generate_map(&img);
-        let image_matrix = self.get_image_matrix(&img);
+        println!("Length of each sequence in henon map: {:?}", henon_map.index(1).len());
+
+        // let image_matrix = self.get_image_matrix(&img);
 
         // let mut henon_file = File::create("map_data/henon_map.txt").expect("Unable to create file");
         // let mut image_file = File::create("map_data/image_file.txt").expect("Unable to create file");
@@ -123,7 +125,7 @@ impl HenonMap {
         for w in 0..(width) {
             for h in 0..(height) {
                 let mut px = img.get_pixel(w, h);
-                let henon_val = henon_map.index(w as usize).index(h as usize);
+                let henon_val = henon_map.index(h as usize).index(w as usize);
                 // println!("Henon map @ pixel: ({},{}): {:?}", w, h, henon_val);
                 px.data[0] = px.data[0] ^ henon_val;
                 px.data[1] = px.data[1] ^ henon_val;

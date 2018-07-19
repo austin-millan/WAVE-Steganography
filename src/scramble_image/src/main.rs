@@ -118,11 +118,13 @@ fn main() {
     // Input Image paths
     // let str_path_jpg = String::from("examples/secret_image.jpg");
     let str_path_png = String::from("examples/secret_image_lena.png");
-    // let secret_path_jpg = Path::new(&str_path_jpg);
+    let str_path_jpg2 = String::from("examples/secret_image_lena2.jpg");
     let secret_path_png = Path::new(&str_path_png);
+    let secret_path_jpg = Path::new(&str_path_jpg2);
 
     //println!("Test Henon (JPG)");
     //test_henon(secret_path_jpg); // do jpg
     println!("Test Henon (PNG)");
     test_henon(secret_path_png); // do png
+    test_henon(secret_path_jpg); // do jpg
 }
