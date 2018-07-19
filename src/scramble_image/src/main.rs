@@ -117,7 +117,7 @@ fn test_arnold(path: &Path) {
 fn main() {
     // Input Image paths
     let str_path_jpg = String::from("examples/secret_image.jpg");
-    let str_path_png = String::from("examples/secret_image.png");
+    let str_path_png = String::from("examples/secret_image_lena.png");
     let secret_path_jpg = Path::new(&str_path_jpg);
     let secret_path_png = Path::new(&str_path_png);
 

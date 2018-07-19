@@ -108,43 +108,24 @@ impl ArnoldCatMap {
 
 /// Henon transformation using DynamicImage
 impl HenonMap {
+    /// Wrapper
     pub fn transform_image(&mut self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
         let valid = self.is_valid();  // use later when it's implemented
         let mut noisy = img.brighten(-25);
+        let (width, height) = img.dimensions();
+        let henon_map = self.map(img);
 
-
-        let mut x = 0.6 as f64;
-        let mut y = 0.2 as f64;
-
-        self.map(img);
-
-        // let (width, height) = img.dimensions();
-//        for w in 0..(width) {
-//            for h in 0..(height) {
-//                // let offset = rng.gen::<u8>();
-//                // let w_f = w as f64;
-//                // let h_f = h as f64;
-//                let px = img.get_pixel(w, h);
-//                // noisy.put_pixel(x, y, px);
-//
-//                let millis = time::Duration::from_millis(150);
-//                let now = time::Instant::now();
-//
-//                thread::sleep(millis);
-//            }
-//        }
-//        println!("x, y = ({:?}, {:?})",x, y);
-        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
+        for w in 0..(width) {
+            for h in 0..(height) {
+                let px = img.get_pixel(w, h);
+                // noisy.put_pixel(x, y, px);
+            }
+        }
+        let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
         noisy
     }
 
-    pub fn is_valid(&self) -> bool {
-        // verify parameters field is of correct type
-        { match self.parameters { HenonMapParameters{a: ref _a, b: ref _b} => true } }
-        // ...fill in later
-    }
-
-    pub fn map(&mut self, mut img: DynamicImage) {
+    pub fn map(&mut self, mut img: DynamicImage) -> Vec<Vec<i64>>{
         let (width, height) = img.dimensions();
         let mut x = 0.6 as f64;
         let mut y = 0.2 as f64;
@@ -152,9 +133,11 @@ impl HenonMap {
         let mut sequence_size = width * height * 8;
         let mut bit_sequence = Vec::new();
         let mut byte_array = Vec::new();
-        // let mut TImgMatrix = Vec::new();
+        let mut t_img_matrix = Vec::new();
 
-        for i in 0..sequence_size {
+        println!("Bit Sequence Size: {:?}", sequence_size);
+
+        for i in 0..sequence_size { // println!("i: {}", i);
             // Henon formula
             let x_n: f64 = -(1.4 * x.powf(2.0)) + y + 1.00;
             let y_n: f64 = 0.3 * x;
@@ -163,31 +146,32 @@ impl HenonMap {
             x = x_n;
             y = y_n;
 
+            // Determine bit value to be push into bit_sequence.
             let mut bit = 0;
-
             if x_n < 0.3992 {bit = 0 as i64}
             else {bit = 1 as i64}
-
             bit_sequence.push(bit);
 
-            // Convert to decimal
-            if i % 8 == 7 {
+            // Convert current bit_sequence into a decimal value.
+            if i % 8 == 7 { // (e.g. 7%8, 15%8, 23%8, ...)
                 let mut decimal_bit_sequence = to_decimal(bit_sequence.clone());
-                println!("Decimal sequence: {:?} -> {:?}", bit_sequence, decimal_bit_sequence);
-                bit_sequence.clear();
                 byte_array.push(decimal_bit_sequence);
-                println!("byte_array: {:?} -> ", byte_array);
+                bit_sequence.clear();
             }
 
-//            let byte_array_size = width*8;
-//            if i % byte_array_size == byte_array_size-1 {
-//                println!("ByteArray (i % byteArraySize == byteArraySize-1): {:?}", byte_array);
-//                TImgMatrix.push( &mut byte_array);
-//                println!("byte_array len: {:?}, values: {:?}", byte_array.len(), byte_array);
-//                byte_array.clear();
-//            }
-//            println!("Resulting TImgMatrix: {:?}", TImgMatrix);
+            let byte_array_size = width*8;
+            if (i % byte_array_size) == (byte_array_size - 1) {
+                t_img_matrix.push(byte_array.clone());
+                byte_array.clear();
+                thread::sleep(time::Duration::from_millis(5000));
+            }
         }
+        t_img_matrix
+    }
+    pub fn is_valid(&self) -> bool {
+        // verify parameters field is of correct type
+        { match self.parameters { HenonMapParameters{a: ref _a, b: ref _b} => true } }
+        // ...fill in later
     }
 }
 
@@ -210,11 +194,21 @@ pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
         &open(&r_path).unwrap())
 }
 
-pub fn to_decimal(vect: Vec<i64>) -> i64 { // &mut is a hack...
+pub fn to_decimal(vect: Vec<i64>) -> i64 { // @todo: make more generic
     let mut res: i64 = 0;
     for item in vect.iter() {
         // let c_item = *item as i64;
         res = res * 2 + *item as i64;
     }
     res
+}
+
+#[cfg(test)]
+mod test_to_decimal {
+    use super::to_decimal;
+    #[test]
+    fn it_works() {
+        assert_eq!(to_decimal(vec![0, 0, 0, 0, 0, 0, 0, 0]), 0);
+        assert_eq!(to_decimal(vec![1, 1, 1, 0, 1, 0, 0, 1]), 233);
+    }
 }
