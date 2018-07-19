@@ -113,7 +113,7 @@ impl HenonMap {
         let valid = self.is_valid();  // use later when it's implemented
         let mut noisy = img.brighten(-25);
         let (width, height) = img.dimensions();
-        let henon_map = self.map(img);
+        let henon_map = self.generate_map(img);
 
         for w in 0..(width) {
             for h in 0..(height) {
@@ -125,7 +125,7 @@ impl HenonMap {
         noisy
     }
 
-    pub fn map(&mut self, mut img: DynamicImage) -> Vec<Vec<i64>>{
+    pub fn generate_map(&mut self, mut img: DynamicImage) -> Vec<Vec<i64>>{
         let (width, height) = img.dimensions();
         let mut x = 0.6 as f64;
         let mut y = 0.2 as f64;
