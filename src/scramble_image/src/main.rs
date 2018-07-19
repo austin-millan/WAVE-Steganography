@@ -78,18 +78,16 @@ fn test_henon(path: &Path) {
         .build()
         .unwrap();
 
-    // Transform sample images
-    println!("Encrypting...");
     let mut henon = HenonMap{parameters: henon_params};
 
+    println!("Encrypting...");
     henon.encrypt(&img, &dest_path_encrypted).save(dest_path_encrypted);
     // Test differences between original and encrypted image.
-    println!("diff <input, output>: {:?} ({:?})", image_diff(&path,&dest_path_encrypted), extension);
+    println!("diff <original, encrypted>: {:?} ({:?})", image_diff(&path,&dest_path_encrypted), extension);
 
-    //println!("Decrypting...");
+    println!("Decrypting...");
     henon.decrypt(&img, &dest_path_encrypted).save(dest_path_decrypted);
-    println!("diff <decrypted, original>: {:?} ({:?})", image_diff(&dest_path_decrypted,&path), extension);
-
+    println!("diff <original, decrypted>: {:?} ({:?})", image_diff(&path, &dest_path_decrypted), extension);
 }
 
 fn test_arnold(path: &Path) {}

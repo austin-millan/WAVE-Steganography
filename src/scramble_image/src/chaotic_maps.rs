@@ -214,7 +214,8 @@ impl HenonMap {
 
         for i in 0..sequence_size { // println!("i: {}", i);
             // Henon formula
-            let x_n: f64 = (((y - 1 as f64) + (1.4 * x.powf(2.0))))/0.3;  // -(1.4 * x.powf(2.0)) + y + 1.00;
+            // let x_n: f64 = (((y - 1 as f64) + (1.4 * x.powf(2.0))))/0.3;  // -(1.4 * x.powf(2.0)) + y + 1.00;
+            let x_n: f64 = (x - y.powf(2.0) - 1.4)/0.3;
             let y_n: f64 = x;
 
             // New x and y values for next iteration of henon formula.
