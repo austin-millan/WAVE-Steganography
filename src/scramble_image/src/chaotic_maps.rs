@@ -117,35 +117,36 @@ impl HenonMap {
         let henon_map = self.generate_map(&img);
         let image_matrix = self.get_image_matrix(&img);
 
-        let mut henon_file = File::create("map_data/henon_map.txt").expect("Unable to create file");
-        let mut image_file = File::create("map_data/image_file.txt").expect("Unable to create file");
+        // let mut henon_file = File::create("map_data/henon_map.txt").expect("Unable to create file");
+        // let mut image_file = File::create("map_data/image_file.txt").expect("Unable to create file");
 
-        for i in 0..henon_map.len(){
-            println!("Henon.index({}) {:?}, length: {}", i, henon_map.index(i), henon_map.index(i).len());
-            thread::sleep(time::Duration::from_millis(200));
+        for w in 0..(width) {
+            for h in 0..(height) {
+                let mut px = img.get_pixel(w, h);
+                let henon_val = henon_map.index(w as usize).index(h as usize);
+                // println!("Henon map @ pixel: ({},{}): {:?}", w, h, henon_val);
+                px.data[0] = px.data[0] ^ henon_val;
+                px.data[1] = px.data[1] ^ henon_val;
+                px.data[2] = px.data[2] ^ henon_val;
+                let res = noisy.put_pixel(w, h, px);
+            }
         }
+        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
+        noisy
 
+//        // Write henon map values to stdout.
+//        for i in 0..henon_map.len(){
+//            // println!("Henon.index({}) {:?}, length: {}", i, henon_map.index(i), henon_map.index(i).len());
+//            // thread::sleep(time::Duration::from_millis(200));
+//        }
+
+//        // Write henon map values to file.
 //        for i in henon_map {
 //            write!(henon_file, "{:?}", i);
 //        }
 //        for i in image_matrix.index(i) {
 //            write!(image_file, "{:?}", i);
 //        }
-
-        // println!("Henon Map: {:?}", henon_map); // println!("Image Matrix: {:?}", image_matrix); // println!("Henon Map: {:?}", henon_map.index(1));
-        //println!("Image matrix size: {:?}", image_matrix.len());
-        //println!("Henon map size: {:?}", henon_map.len());
-
-        // println!("Image matrix: {:?}", image_matrix);
-
-
-        for w in 0..(width) {
-            for h in 0..(height) {
-                let px = img.get_pixel(w, h);
-            }
-        }
-        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
-        noisy
     }
 
     /// Returns a vector of vectors containing image pixel values
