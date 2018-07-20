@@ -100,11 +100,8 @@ impl ArnoldCatMap {
                 let offset = rng.gen::<u8>();
                 let px = img.get_pixel(x, y).map(|v| if v <= 255 - offset { v + offset } else { 255 });
                 noisy.put_pixel(x, y, px);
-                // xN = y + 1 - 1.4 * x**2
-                // yN = 0.3 * x
             }
         }
-        // let thumbnail = noisy.resize(120, 120, FilterType::Lanczos3);
         noisy
     }
     pub fn is_valid(&self) -> bool {
@@ -118,12 +115,14 @@ impl ArnoldCatMap {
 /// Henon transformation using DynamicImage
 impl HenonMap {
     pub fn encrypt(&mut self, mut img: &DynamicImage, dest_path: &Path) -> DynamicImage {
-        let henon_map = self.gen_encryption_keystream(&img);
+        let (width, height) = img.dimensions();
+        let henon_map = self.generate_keystream(width, height, true);
         self.transform_image(img.clone(), dest_path, henon_map)
     }
 
     pub fn decrypt(&mut self, mut img: &DynamicImage, dest_path: &Path) -> DynamicImage {
-        let henon_map = self.gen_decryption_keystream(&img);
+        let (width, height) = img.dimensions();
+        let henon_map = self.generate_keystream(width, height, false);
         self.transform_image(img.clone(), dest_path, henon_map)
     }
 
@@ -137,7 +136,6 @@ impl HenonMap {
             for h in 0..(height) {
                 let mut px = img.get_pixel(w, h);
                 let henon_val = henon_map.index(h as usize).index(w as usize);
-                // println!("Henon map @ pixel: ({},{}): {:?}", w, h, henon_val);
                 px.data[0] = px.data[0] ^ henon_val;
                 px.data[1] = px.data[1] ^ henon_val;
                 px.data[2] = px.data[2] ^ henon_val;
@@ -147,14 +145,15 @@ impl HenonMap {
         noisy
     }
 
-    /// Generate key values using Henon map.
-    /// Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
-    pub fn gen_encryption_keystream(&mut self, mut img: &DynamicImage) -> Vec<Vec<u8>> {
-        let (width, height) = img.dimensions();
-
+    /// Generates key stream for encryption/decryption process using Henon chaotic map.
+    /// param sequence_size: width*height*8
+    /// param encryption: determines whether inverse algorithm is used or not.
+    pub fn generate_keystream(&mut self, width: u32, height: u32, encryption: bool) -> Vec<Vec<u8>> {
         // (1) choose the initial value of (X1,Y1) for Henon map
         let mut x = self.parameters.x;
         let mut y = self.parameters.y;
+        let mut x_n: f64 = 0.00;
+        let mut y_n: f64 = 0.00;
 
         // (2) If the image size is m×n then the number of henon sequence will be 8×m×n obtained by
         // henon equation (x_n, y_n below).
@@ -163,19 +162,26 @@ impl HenonMap {
         let mut byte_array = Vec::new();
         let mut t_img_matrix = Vec::new();
 
+        /// Generate key values using Henon map.
+        /// Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
         for i in 0..sequence_size { // println!("i: {}", i);
             // Henon formula
-            let x_n: f64 = -(1.4 * x.powf(2.0)) + y + 1.00;
-            let y_n: f64 = 0.3 * x;
+            if encryption == true {
+                x_n = -(1.4 * x.powf(2.0)) + y + 1.00;
+                y_n = 0.3 * x;
+            }
+            else {
+                x_n = (x - y.powf(2.0) - 1.4)/0.3;
+                y_n = x;
+            }
 
             // New x and y values for next iteration of henon formula.
             x = x_n;
             y = y_n;
 
             // Determine bit value to be push into bit_sequence.
+            // (3) cut-off point, 0.3992, has been determined so that the sequence is balanced.
             let mut bit = 0;
-            // (3) Experimental analysis conclude that cut-off point, 0.3992, has been
-            // determined so that the sequence is balanced.
             if x_n < 0.3992 {bit = 0 as u8}
             else {bit = 1 as u8}
             bit_sequence.push(bit);
@@ -196,72 +202,6 @@ impl HenonMap {
         t_img_matrix
     }
 
-    /// Generate key values using Henon map.
-    /// Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
-    pub fn gen_decryption_keystream(&mut self, mut img: &DynamicImage) -> Vec<Vec<u8>> {
-        let (width, height) = img.dimensions();
-
-        // (1) choose the initial value of (X1,Y1) for Henon map
-        let mut x = self.parameters.x;
-        let mut y = self.parameters.y;
-
-        // (2) If the image size is m×n then the number of henon sequence will be 8×m×n obtained by
-        // henon equation (x_n, y_n below).
-        let mut sequence_size = width * height * 8;  // correct
-        let mut bit_sequence = Vec::new();
-        let mut byte_array = Vec::new();
-        let mut t_img_matrix = Vec::new();
-
-        for i in 0..sequence_size { // println!("i: {}", i);
-            // Henon formula
-            // let x_n: f64 = (((y - 1 as f64) + (1.4 * x.powf(2.0))))/0.3;  // -(1.4 * x.powf(2.0)) + y + 1.00;
-            let x_n: f64 = (x - y.powf(2.0) - 1.4)/0.3;
-            let y_n: f64 = x;
-
-            // New x and y values for next iteration of henon formula.
-            x = x_n;
-            y = y_n;
-
-            // Determine bit value to be push into bit_sequence.
-            let mut bit = 0;
-            // (3) Experimental analysis conclude that cut-off point, 0.3992, has been
-            // determined so that the sequence is balanced.
-            if x_n < 0.3992 {bit = 0 as u8}
-            else {bit = 1 as u8}
-            bit_sequence.push(bit);
-
-            // (4) Henon sequence is then reduced by combining each consecutive 8 bits into one decimal value.
-            if i % 8 == 7 { // (e.g. 7%8, 15%8, 23%8, ...)
-                let mut decimal_bit_sequence = to_decimal(bit_sequence.clone());
-                byte_array.push(decimal_bit_sequence);
-                bit_sequence.clear();
-            }
-
-            let byte_array_size = width*8;
-            if (i % byte_array_size) == (byte_array_size - 1) {
-                t_img_matrix.push(byte_array.clone());
-                byte_array.clear();
-            }
-        }
-        t_img_matrix
-    }
-
-//    /// Returns a vector of vectors containing image pixel values
-//    /// not needed if I am working with pixels directly.
-//    pub fn get_image_matrix(&mut self, img: &DynamicImage) -> Vec<Vec<[u8; 4]>> {
-//        // let mut reference = img;
-//        let mut image_matrix = Vec::new();
-//        let (width, height) = img.dimensions();
-//        for w in 0..(width) {  // for each row
-//            let mut row = Vec::new();  // start with a fresh row vector.
-//            for h in 0..(height) {
-//                let px = img.get_pixel(w, h);  // get pixel
-//                row.push(px.data);  // push pixel data (array of u8)
-//            }
-//            image_matrix.push(row);
-//        }
-//        image_matrix
-//    }
     pub fn is_valid(&self) -> bool {
         // verify parameters field is of correct type
         { match self.parameters { HenonMapParameters{a: ref _a, b: ref _b, x: ref _x, y: ref_y} => true }}
