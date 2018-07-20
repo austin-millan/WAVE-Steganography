@@ -77,8 +77,18 @@ Please see
 ### Issues
 
 - Image Encryption by Henon Chaotic System
-    - [ ] Encrypt image using Henon algorithm.
+    - [x] Encrypt image using Henon algorithm.
         - [x] Generate henon sequence.
+        - [x] XOR-op between image and henon sequence.
+        - [ ] Stretch: include image shuffling
+
+    - [x] Decrypt image using Henon algorithm.
+        - [x] Generate (inverse) henon sequence.
+        - [x] XOR-op between image and henon sequence.
+
+- Image Encryption by Arnold Chaotic System
+    - [ ] Encrypt image using Arnold Cat Map algorithm.
+        - [ ] Generate arnold sequence.
         - [ ] XOR-op between image and henon sequence.
         - [ ] Stretch: include image shuffling
 
