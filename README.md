@@ -88,13 +88,7 @@ Please see
 
 - Image Encryption by Arnold Chaotic System
     - [ ] Encrypt image using Arnold Cat Map algorithm.
-        - [ ] Generate arnold sequence.
-        - [ ] XOR-op between image and henon sequence.
-        - [ ] Stretch: include image shuffling
-
     - [ ] Decrypt image using Henon algorithm.
-        - [ ] Generate (inverse) henon sequence.
-        - [ ] XOR-op between image and henon sequence.
 
 - Steganography
     - [ ] Embed text using LSB.
