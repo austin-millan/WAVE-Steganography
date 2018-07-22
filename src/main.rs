@@ -5,30 +5,27 @@
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
 
+
+mod utils;
+
 #[macro_use]
 extern crate derive_builder;
 
 extern crate image;
 extern crate scramble_image;
 extern crate rand;
+extern crate byteorder;
 
 use std::path::Path;
 use scramble_image::chaotic_maps::*;
 
+
 fn main() {
     // Input File
-    let file = String::from("examples/secret_image.jpg");
-    let mut img = image::open(&Path::new(&file)).unwrap();
-
-    // Parameter builder for mapping
-//    let henon_param = ChaoticMapParameters::HenonMapParametersBuilder()
-//        .build()
-//        .unwrap();
+    let wav_file = String::from("examples/cover_audio.wav");
+    let secret_text = String::from("examples/secret_text.txt");
 
 
-    // Output File
-    // let fout = &mut File::create(&Path::new("examples/output.png")).unwrap();
-    // im.write_to(fout, image::PNG).unwrap();
-
-    //image_scramble::scramble(&mut img);
+    utils::encoder::lsb_enc(&wav_file, &secret_text, &"examples/stego_audio.wav".to_string());
+    //utils::lsb_encode();
 }

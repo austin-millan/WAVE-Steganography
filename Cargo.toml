@@ -9,6 +9,7 @@ dwt = "0.5.2"
 image = "*"
 rand = "*"
 derive_builder = "*"
+byteorder = "*"
 
 [workspace]
 members = ["src/scramble_image"]
