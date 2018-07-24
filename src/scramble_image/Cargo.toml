@@ -6,7 +6,6 @@ authors = ["austin-millan <austin.millan@protonmail.com>"]
 [dependencies]
 image = "*"
 imageproc = "*"
-rand = "*"
 derive_builder = "*"
 
 [lib]

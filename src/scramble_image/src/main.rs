@@ -1,6 +1,6 @@
 // For dev
 #![allow(dead_code)]
-#![allow(unused_imports)]
+// #![allow(unused_imports)]
 #![allow(unused_variables)]
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
@@ -8,17 +8,12 @@
 #[macro_use] extern crate derive_builder;
 extern crate image;
 extern crate scramble_image;
-extern crate rand;
 extern crate imageproc;
 
 pub mod chaotic_maps;
 
 use chaotic_maps::*;
-use image::*;
-use std::path::*;
 use std::path::Path;
-use std::fs::File;
-use std::vec::*;
 
 
 // copy pasta
@@ -40,7 +35,7 @@ fn test_henon(path: &Path) {
             match os_str.to_str() {
                 Some("png") => "png",
                 Some("jpg") => "jpg",
-                _ => "NOT SUPPORTED",
+                _ => "NOT SUPPORTED"
             }
         }
     };

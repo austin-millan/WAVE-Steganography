@@ -1,25 +1,16 @@
 // For dev
 #![allow(dead_code)]
-#![allow(unused_imports)]
+// #![allow(unused_imports)]
 #![allow(unused_variables)]
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
 
-
-extern crate rand;
-
 use image::*;
-use image::{GenericImage, Pixel};
-use rand::{Rng};
+use image::{GenericImage};
 use imageproc;
-use std::fs::File;
-use std::io::prelude::*;
 use std::path::Path;
 use std::vec::*;
-use std::borrow::Borrow;
 use std::ops::*;
-use image::Pixels;
-use std::{thread, time};
 
 
 pub struct ArnoldCatMap  {
@@ -86,30 +77,7 @@ pub enum ChaoticMapType {
 }
 
 
-impl ArnoldCatMap {
-    pub fn transform_image(&mut self, mut img: DynamicImage, dest_path: &Path) -> DynamicImage {
-        let valid = self.is_valid();  // use later when it's implemented
-        let color = img.color();
-        let (width, height) = img.dimensions();
-        let mut noisy = img.brighten(-25);
-        let mut rng = super::rand::thread_rng();
-
-        let (width, height) = img.dimensions();
-        for x in 0..(width) {
-            for y in 0..(height) {
-                let offset = rng.gen::<u8>();
-                let px = img.get_pixel(x, y).map(|v| if v <= 255 - offset { v + offset } else { 255 });
-                noisy.put_pixel(x, y, px);
-            }
-        }
-        noisy
-    }
-    pub fn is_valid(&self) -> bool {
-        // verify parameters field is of correct type
-        { match self.parameters { ArnoldCatMapParameters{val: ref _a} => true } }
-        // ...fill in later
-    }
-}
+impl ArnoldCatMap { }
 
 
 /// Henon transformation using DynamicImage
@@ -162,8 +130,8 @@ impl HenonMap {
         let mut byte_array = Vec::new();
         let mut t_img_matrix = Vec::new();
 
-        /// Generate key values using Henon map.
-        /// Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
+        // Generate key values using Henon map.
+        // Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
         for i in 0..sequence_size { // println!("i: {}", i);
             // Henon formula
             if encryption == true {
@@ -209,17 +177,6 @@ impl HenonMap {
     }
 }
 
-impl ChaoticMapType {
-    pub fn whoami(&self) -> String {
-        match * self {
-            ChaoticMapType::ArnoldCatMap{parameters: ref _a} => format!("ArnoldCatMap"),
-            ChaoticMapType::HenonMap{parameters: ref _a} => format!("HenonMap"),
-            ChaoticMapType::SingerMapParameters{parameters: ref _a} => format!("SingerMapParameters"),
-            _ => format!("")
-        }
-    }
-}
-
 /// This function returns the amount of difference between two images as a float.
 /// Based on: https://gkbrk.com/2018/01/evolving-line-art/
 pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
@@ -245,3 +202,14 @@ mod test_to_decimal {
         assert_eq!(to_decimal(vec![1, 1, 1, 0, 1, 0, 0, 1]), 233);
     }
 }
+
+//impl ChaoticMapType {
+//    pub fn whoami(&self) -> String {
+//        match * self {
+//            ChaoticMapType::ArnoldCatMap{parameters: ref _a} => format!("ArnoldCatMap"),
+//            ChaoticMapType::HenonMap{parameters: ref _a} => format!("HenonMap"),
+//            ChaoticMapType::SingerMapParameters{parameters: ref _a} => format!("SingerMapParameters"),
+//            _ => format!("")
+//        }
+//    }
+//}
