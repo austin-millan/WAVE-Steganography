@@ -18,14 +18,17 @@ pub mod encoder {
     use std::ffi::OsStr;
     use std::fs::File;
     use std::io::Read;
-    //use std::io::BufReader;
-    //use std::io::prelude::*;
-    //use std::vec::*;
-    //use std::vec::Vec;
-    //use std::iter::FilterMap;
+    use std::io::BufReader;
+    use std::io::prelude::*;
+    use std::vec::*;
+    use std::vec::Vec;
+    use std::iter::FilterMap;
     use utils::hound::*;
-    //use utils::sample::*;
-    use byteorder::{LittleEndian, ReadBytesExt};
+    use utils::sample::*;
+    use utils::sample::{signal, Signal, ToFrameSliceMut};
+    use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
+    use super::sample::signal::UntilExhausted;
+    use super::sample::signal::FromInterleavedSamplesIterator;
 
     /// param in_path: Path of WAV file
     pub fn lsb_enc(cover_in_path: &String, stego_out_path: &String, data_path: &String) {
@@ -42,11 +45,18 @@ pub mod encoder {
         let reader = WavReader::open(&cover_in_path).unwrap();
 
         // Get the wav spec and create a target with the new desired sample rate.
-        // let pa = pa::PortAudio::new().unwrap();
-        //let pa2 = super::portaudio::bitflags::std::
-        // let pa3 = super::pa::PortAudio::new().unwrap();
-        //let pa1 = self::Port
+        let port_audio = super::pa::PortAudio::new().unwrap();
         let spec = reader.spec();
+
+        // Read the interleaved samples and convert them to a signal.
+        let samples = reader.into_samples::<i16>().filter_map(Result::ok);
+//        for sample in samples. {
+//            println!("Samples: {:?}", samples);  // fails
+//        }
+
+
+
+
         println!("Bits per sample: {:?}", spec.bits_per_sample);
         println!("Channels: {:?}", spec.channels);
         println!("Sample Rate: {:?}", spec.sample_rate);
@@ -61,12 +71,5 @@ pub mod encoder {
 
         // Load the data section
         let mut buffer: Vec<i16> = Vec::new();
-        // println!("Number of samples: {:?}", reader.num_samples);
-
-        // while(f.read)
-        //f.read
-
-        //f.read_to_end(&mut buffer);
-        println!("Buffer: {:?}", buffer);
     }
 }
