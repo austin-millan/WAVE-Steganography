@@ -11,7 +11,6 @@ mod utils;
 extern crate image;
 extern crate scramble_image;
 extern crate byteorder;
-extern crate portaudio as pa;
 
 // use scramble_image::chaotic_maps::*;
 

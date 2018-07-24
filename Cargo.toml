@@ -9,10 +9,7 @@ authors = ["austin-millan <austin.millan@protonmail.com>"]
 image = "*"
 derive_builder = "*"
 byteorder = "*"
-# find_folder = "*"
 hound = "*"
-sample = "0.10.0"
-portaudio = "*"
 
 [workspace]
 members = ["src/scramble_image"]
