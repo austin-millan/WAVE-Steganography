@@ -10,6 +10,7 @@ image = "*"
 derive_builder = "*"
 byteorder = "*"
 hound = "*"
+sample = "*"
 
 [workspace]
 members = ["src/scramble_image"]
