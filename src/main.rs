@@ -21,4 +21,6 @@ fn main() {
     let wav_file = String::from("examples/cover_audio.wav");
     let secret_text = String::from("examples/secret_text.txt");
     utils::encoder::lsb_enc(&wav_file, &"examples/stego_audio.wav".to_string(), &secret_text);
+
+    // utils::encoder::iterate_over_bits(8);
 }

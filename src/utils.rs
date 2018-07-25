@@ -10,6 +10,7 @@
 
 extern crate hound;
 //extern crate sample;
+extern crate bitvector;
 
 pub mod encoder {
     use std::path::Path;
@@ -23,6 +24,8 @@ pub mod encoder {
     use std::error;
     use std::num::ParseIntError;
     use std::fmt;
+    //use std::collections::BitVec;
+    //use utils::bitvector::*;
     use std::iter::FilterMap;
     use utils::hound::*;
     use utils::hound::{WavReader, WavWriter};
@@ -31,6 +34,7 @@ pub mod encoder {
     use std::thread;
     use std::time;
     use std::fs;
+    use super::bitvector::BitVector;
 
     /// param in_path: Path of WAV file
     /// Stores data of file `data_path` in the LSB of every sample found in `cover_in_path`,
@@ -58,10 +62,13 @@ pub mod encoder {
 
         let data_file_metadata = fs::metadata(&data_path).unwrap();
         println!("Secret data length: {:?}", data_file_metadata.len());
+
+
         // Iterate over samples
 //        for sample in samples.iter_mut() {
 //            println!("Sample: {:?}", sample);
 //            thread::sleep(time::Duration::from_millis(100));
+//
 //        }
     }
 
@@ -82,10 +89,30 @@ pub mod encoder {
         bytes
     }
 
-
-    pub fn usage() {
-        println!("LSB encoding only supports 24-bit WAV files.");
+    /// gets the bit at position `n`. Bits are numbered from 0 (least significant) to 31 (most significant).
+    pub fn get_bit_at(bytes: i16, pos: u8) -> bool {
+        if pos < 16 {
+            bytes & (1 << pos) != 0
+        }
+        else {
+            false
+        }
     }
+
+    // /// NOT WORKING YET
+//    pub fn iterate_over_bits(mut bytes: i16) {
+//        println!("Bytes (before): {:b}", bytes);
+//        //let mut bitvec = BitVector::new(30)
+//        //let bv = BitVector::from_elem(10, false);
+//        let bv2 = BitVector::new(8);
+//        //let bv3 = BitVec::from_elem(10, false);
+//        //assert_eq!(bv2.len(), 8);
+//        println!("Now iterating...");
+//        for x in bv2.iter() {
+//            println!("x: {:?}", x);
+//            //assert_eq!(x, false);
+//        }
+//    }
 }
 
 #[cfg(test)]
@@ -96,5 +123,26 @@ mod test_set_bit {
         assert_eq!(encoder::set_bit(8, 0, 1), 9);
         assert_eq!(encoder::set_bit(0, 1, 1), 2);
         assert_eq!(encoder::set_bit(-8, 1, 1), -6);
+    }
+}
+
+#[cfg(test)]
+mod test_get_bit {
+    use utils::encoder;
+    #[test]
+    fn test_get_bit(){
+        assert_eq!(encoder::get_bit_at(8, 10000), false);
+        assert_eq!(encoder::get_bit_at(8, 8), false);
+        assert_eq!(encoder::get_bit_at(8, 3), true);
+        assert_eq!(encoder::get_bit_at(8, 2), false);
+        assert_eq!(encoder::get_bit_at(8, 1), false);
+        assert_eq!(encoder::get_bit_at(8, 0), false);
+        assert_eq!(encoder::get_bit_at(-1, 0), true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_get_bit_should_fail(){
+        assert_eq!(encoder::get_bit_at(8, 0), true);
     }
 }

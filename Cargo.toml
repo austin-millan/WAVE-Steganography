@@ -11,6 +11,7 @@ derive_builder = "*"
 byteorder = "*"
 hound = "*"
 sample = "*"
+bitvector = "*"
 
 [workspace]
 members = ["src/scramble_image"]
