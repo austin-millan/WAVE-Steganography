@@ -35,12 +35,32 @@ pub mod encoder {
 
         // Get all WAV samples (where to embed secret)
         let mut samples: Vec<i16> = reader.samples().map(|s| s.unwrap()).collect();
-        println!("Number of samples (vec size): {:?}", samples.len());
+        // println!("Number of samples (vec size): {:?}", samples.len());
 
         let data_file_metadata = fs::metadata(&data_path).unwrap();
-        println!("Secret data length: {:?}, in bytes: {:b}", data_file_metadata.len(), data_file_metadata.len());
+        let cover_file_metadata = fs::metadata(&cover_in_path).unwrap();
+        println!("Secret data length: {:?} -> (as bytes): {:b}", data_file_metadata.len(), data_file_metadata.len());
 
-        let x = data_file_metadata.len() as i16;
+        let secret_len = data_file_metadata.len() as i32;
+        let cover_len = cover_file_metadata.len() as i32;
+
+
+        println!("Cover length: {}", cover_len/2);
+
+        // Verify secret can be stored in data section.
+        // (secret_len * 16) = number of bits in data to be stored
+        // samples.len() = total number of samples available to store 1bit/sample for LSB.
+        if (secret_len * 16) as i32 > samples.len() as i32{
+            panic!("Secret is too large for cover audio: {} bits cannot be stored {} samples.",
+                   secret_len*16, samples.len());
+        }
+
+//        // Can be removed
+//        if (secret_len * 16) as i32 <= samples.len() as i32{
+//            println!("# bits to hide: {}.\n# altered samples: {} (1 bit per sample).\n\
+//                      # total available samples in cover audio: {}",
+//                     secret_len * 16, secret_len * 16, samples.len());
+//        }
 
         // Iterate over samples
         let mut sample_num = 0;
