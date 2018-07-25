@@ -40,36 +40,35 @@ pub mod encoder {
     /// Stores data of file `data_path` in the LSB of every sample found in `cover_in_path`,
     /// where ach sample has type `i16`.
     pub fn lsb_enc(cover_in_path: &String, stego_out_path: &String, data_path: &String) {
-        let path = Path::new(&cover_in_path);
-        if !path.exists()
-            || Path::new(&cover_in_path.to_string()).extension() != Some(OsStr::new("wav")) {
-            panic!("Cover audio must be WAV format.");
-        }
+        check_usage(cover_in_path, stego_out_path, data_path);
 
-        // Get WAV spec
+        // Get WAV spec from file
         let mut reader = WavReader::open(&cover_in_path).unwrap();
         let spec = reader.spec();
 
-        if spec.bits_per_sample != 16 {
-            panic!("Cover audio must have 16-bit depth.");
-        }
-
-        display_spec(spec);
+        // Setup output file for writing
+        let mut writer = WavWriter::create(&stego_out_path,spec).unwrap();
 
         // Get all WAV samples (where to embed secret)
         let mut samples: Vec<i16> = reader.samples().map(|s| s.unwrap()).collect();
         println!("Number of samples (vec size): {:?}", samples.len());
 
         let data_file_metadata = fs::metadata(&data_path).unwrap();
-        println!("Secret data length: {:?}", data_file_metadata.len());
+        println!("Secret data length: {:?}, in bytes: {:b}", data_file_metadata.len(), data_file_metadata.len());
 
+        let x = data_file_metadata.len() as i16;
 
         // Iterate over samples
-//        for sample in samples.iter_mut() {
-//            println!("Sample: {:?}", sample);
-//            thread::sleep(time::Duration::from_millis(100));
-//
-//        }
+        let mut sample_num = 0;
+        for mut sample in samples.iter_mut() {
+            writer.write_sample(*&*sample).unwrap();
+//            println!("Sample(#{}): D: {:?} B: {:b}, 16th position: {}",
+//                     sample_num, *sample, *sample, get_bit_at(*&*sample, 15));
+
+            //thread::sleep(time::Duration::from_millis(100));
+            sample_num += 1;
+        }
+        writer.finalize().unwrap();
     }
 
     pub fn display_spec(spec: WavSpec) {
@@ -91,12 +90,8 @@ pub mod encoder {
 
     /// gets the bit at position `n`. Bits are numbered from 0 (least significant) to 31 (most significant).
     pub fn get_bit_at(bytes: i16, pos: u8) -> bool {
-        if pos < 16 {
-            bytes & (1 << pos) != 0
-        }
-        else {
-            false
-        }
+        if pos < 16 { bytes & (1 << pos) != 0 }
+        else { false }
     }
 
     // /// NOT WORKING YET
@@ -113,6 +108,20 @@ pub mod encoder {
 //            //assert_eq!(x, false);
 //        }
 //    }
+
+    pub fn check_usage(cover_in_path: &String, stego_out_path: &String, data_path: &String) {
+        let path = Path::new(&cover_in_path);
+        if !path.exists()
+            || Path::new(&cover_in_path.to_string()).extension() != Some(OsStr::new("wav")) {
+            panic!("Cover audio must be WAV format.");
+        }
+        // Get WAV spec
+        let mut reader = WavReader::open(&cover_in_path).unwrap();
+        let spec = reader.spec();
+        if spec.bits_per_sample != 16 {
+            panic!("Cover audio must have 16-bit depth.");
+        }
+    }
 }
 
 #[cfg(test)]
@@ -134,15 +143,7 @@ mod test_get_bit {
         assert_eq!(encoder::get_bit_at(8, 10000), false);
         assert_eq!(encoder::get_bit_at(8, 8), false);
         assert_eq!(encoder::get_bit_at(8, 3), true);
-        assert_eq!(encoder::get_bit_at(8, 2), false);
-        assert_eq!(encoder::get_bit_at(8, 1), false);
         assert_eq!(encoder::get_bit_at(8, 0), false);
         assert_eq!(encoder::get_bit_at(-1, 0), true);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_get_bit_should_fail(){
-        assert_eq!(encoder::get_bit_at(8, 0), true);
     }
 }
