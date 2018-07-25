@@ -1,6 +1,6 @@
 // For dev
 #![allow(dead_code)]
-#![allow(unused_imports)]
+//#![allow(unused_imports)]
 #![allow(unused_variables)]
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
@@ -9,32 +9,16 @@
 // Header: 1:40 bytes, length: 41:43, data = 44:EOF.
 
 extern crate hound;
-//extern crate sample;
-extern crate bitvector;
 
 pub mod encoder {
+    use std::fs;
     use std::path::Path;
     use std::ffi::OsStr;
-    use std::fs::File;
-    use std::io::Read;
-    use std::io::BufReader;
-    use std::io::prelude::*;
-    use std::vec::*;
     use std::vec::Vec;
-    use std::error;
-    use std::num::ParseIntError;
-    use std::fmt;
-    //use std::collections::BitVec;
-    //use utils::bitvector::*;
-    use std::iter::FilterMap;
     use utils::hound::*;
     use utils::hound::{WavReader, WavWriter};
-    //use utils::sample::*;
-    use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
-    use std::thread;
-    use std::time;
-    use std::fs;
-    use super::bitvector::BitVector;
+    //use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
+    //use std::thread;
 
     /// param in_path: Path of WAV file
     /// Stores data of file `data_path` in the LSB of every sample found in `cover_in_path`,
