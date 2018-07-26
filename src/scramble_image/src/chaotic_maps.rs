@@ -135,11 +135,11 @@ impl HenonMap {
         for i in 0..sequence_size { // println!("i: {}", i);
             // Henon formula
             if encryption == true {
-                x_n = -(1.4 * x.powf(2.0)) + y + 1.00;
-                y_n = 0.3 * x;
+                x_n = -(self.parameters.a * x.powf(2.0)) + y + 1.00;
+                y_n = self.parameters.b * x;
             }
             else {
-                x_n = (x - y.powf(2.0) - 1.4)/0.3;
+                x_n = (x - y.powf(2.0) - self.parameters.a)/self.parameters.b;
                 y_n = x;
             }
 
@@ -156,7 +156,7 @@ impl HenonMap {
 
             // (4) Henon sequence is then reduced by combining each consecutive 8 bits into one decimal value.
             if i % 8 == 7 { // (e.g. 7%8, 15%8, 23%8, ...)
-                let mut decimal_bit_sequence = to_decimal(bit_sequence.clone());
+                let mut decimal_bit_sequence = vec_to_dec(bit_sequence.clone());
                 byte_array.push(decimal_bit_sequence);
                 bit_sequence.clear();
             }
@@ -185,7 +185,7 @@ pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
         &open(&r_path).unwrap())
 }
 
-pub fn to_decimal(vect: Vec<u8>) -> u8 { // @todo: make more generic
+pub fn vec_to_dec(vect: Vec<u8>) -> u8 { // @todo: make more generic
     let mut res: u8 = 0;
     for item in vect.iter() {
         res = res * 2 + *item as u8;
@@ -195,11 +195,11 @@ pub fn to_decimal(vect: Vec<u8>) -> u8 { // @todo: make more generic
 
 #[cfg(test)]
 mod test_to_decimal {
-    use super::to_decimal;
+    use super::vec_to_dec;
     #[test]
     fn it_works() {
-        assert_eq!(to_decimal(vec![0, 0, 0, 0, 0, 0, 0, 0]), 0);
-        assert_eq!(to_decimal(vec![1, 1, 1, 0, 1, 0, 0, 1]), 233);
+        assert_eq!(vec_to_dec(vec![0, 0, 0, 0, 0, 0, 0, 0]), 0);
+        assert_eq!(vec_to_dec(vec![1, 1, 1, 0, 1, 0, 0, 1]), 233);
     }
 }
 

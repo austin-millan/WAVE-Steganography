@@ -9,7 +9,7 @@
 extern crate hound;
 
 pub mod encoder {
-    use std::fs;
+    use std::fs::metadata;
     use std::path::Path;
     use std::ffi::OsStr;
     use std::vec::Vec;
@@ -33,7 +33,7 @@ pub mod encoder {
 
         // Read 16-bit samples
         let mut samples: Vec<i16> = reader.samples().map(|s| s.unwrap()).collect();
-        let (data_file_metadata, cover_file_metadata) = (fs::metadata(&payload_path).unwrap(), fs::metadata(&wav_path).unwrap());
+        let (data_file_metadata, cover_file_metadata) = (metadata(&payload_path).unwrap(), metadata(&wav_path).unwrap());
         // Get length for payload and cover.
         let (secret_len, cover_len) = (data_file_metadata.len() as i32, cover_file_metadata.len() as i32);
         println!("-> Cover length: {}\n-> Secret data length: {:?}",

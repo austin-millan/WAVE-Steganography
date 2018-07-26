@@ -5,11 +5,9 @@ authors = ["austin-millan <austin.millan@protonmail.com>"]
 #build = "build.rs"
 
 [dependencies]
-# dwt = "0.5.2"
-image = "*"
-derive_builder = "*"
-byteorder = "*"
 hound = "*"
+derive_builder = "*"
+# dwt = "0.5.2"
 
 [workspace]
 members = ["src/scramble_image"]
