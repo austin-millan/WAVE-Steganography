@@ -2,11 +2,9 @@
 #![allow(dead_code)]
 //#![allow(unused_imports)]
 #![allow(unused_variables)]
-#![allow(unused_must_use)]
+//#![allow(unused_must_use)]
 //#![allow(unused_mut)]
 
-// In the canonical WAV format using RIFF specification:
-// Header: 1:40 bytes, length: 41:43, data = 44:EOF.
 
 extern crate hound;
 
@@ -23,6 +21,8 @@ pub mod encoder {
     /// param in_path: Path of WAV file
     /// Stores data of file `data_path` in the LSB of every sample found in `cover_in_path`,
     /// where ach sample has type `i16`.
+    /// In the canonical WAV format using RIFF specification:
+    /// Header: 1:40 bytes, length: 41:43, data = 44:EOF.
     pub fn lsb_enc(wav_path: &String, stego_out_path: &String, payload_path: &String) {
         check_usage(wav_path, stego_out_path, payload_path);
 
@@ -118,12 +118,11 @@ pub mod decoder {
     }
 }
 
-
 pub fn set_bit(mut bytes: i32, pos: u8, x: u8) -> i32{
     //println!("Bytes (before): {:b}, Decimal (after): {}, x: {:b}", bytes, bytes, x);
     bytes &= !1 << pos;
     if x.eq(&1) {
-        bytes |= (1 << pos);
+        bytes |= 1 << pos;
     }
     //println!("Bytes (after): {:b}, Decimal (after): {}", bytes, bytes);
     bytes
@@ -146,7 +145,6 @@ pub fn bin_to_dec(arr: &[u8]) -> i32 { // @todo: make more generic
     }
     res
 }
-
 
 #[cfg(test)]
 mod test_set_bit {

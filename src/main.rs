@@ -2,8 +2,8 @@
 #![allow(dead_code)]
 // #![allow(unused_imports)]
 #![allow(unused_variables)]
-#![allow(unused_must_use)]
-#![allow(unused_mut)]
+//#![allow(unused_must_use)]
+//#![allow(unused_mut)]
 
 
 mod utils;
@@ -32,7 +32,7 @@ fn main() {
     // Remove file if it exists to avoid writing over old stego file
     if Path::new(&stego_out).exists() {
         println!("Removing file.");
-        fs::remove_file(&stego_out);
+        fs::remove_file(&stego_out).unwrap();
     }
 
     println!("Encoding text...");
@@ -44,7 +44,7 @@ fn main() {
     // Remove file
     if Path::new(&stego_out).exists() {
         println!("Removing stego file.");
-        fs::remove_file(&stego_out);
+        fs::remove_file(&stego_out).unwrap();
     }
 
     println!("Encoding image...");
@@ -56,6 +56,6 @@ fn main() {
     // Remove file
     if Path::new(&stego_out).exists() {
         println!("Removing stego file.");
-        fs::remove_file(&stego_out);
+        fs::remove_file(&stego_out).unwrap();
     }
 }
