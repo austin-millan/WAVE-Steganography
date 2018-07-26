@@ -15,7 +15,7 @@ pub mod encoder {
     use std::vec::Vec;
     use utils::hound::*;
     use utils::hound::{WavReader, WavWriter};
-    use utils::set_bit;
+    use utils::set_bit_at;
     use utils::get_bit_at;
 
     /// param in_path: Path of WAV file
@@ -52,7 +52,7 @@ pub mod encoder {
             if i < 32 {
                 let bit_to_store = get_bit_at(secret_len, i as u8);
                 let bit_to_replace = get_bit_at(**&sample as i32, 0 as u8); // LSB
-                let sample = set_bit(**&sample as i32, 0, bit_to_store as u8);
+                let sample = set_bit_at(**&sample as i32, 0, bit_to_store as u8);
                 let res = writer.write_sample(sample as i16).unwrap();
             }
             i += 1;
@@ -118,13 +118,11 @@ pub mod decoder {
     }
 }
 
-pub fn set_bit(mut bytes: i32, pos: u8, x: u8) -> i32{
-    //println!("Bytes (before): {:b}, Decimal (after): {}, x: {:b}", bytes, bytes, x);
+pub fn set_bit_at(mut bytes: i32, pos: u8, x: u8) -> i32 {
     bytes &= !1 << pos;
     if x.eq(&1) {
         bytes |= 1 << pos;
     }
-    //println!("Bytes (after): {:b}, Decimal (after): {}", bytes, bytes);
     bytes
 }
 
@@ -148,12 +146,12 @@ pub fn bin_to_dec(arr: &[u8]) -> i32 { // @todo: make more generic
 
 #[cfg(test)]
 mod test_set_bit {
-    use utils::set_bit;
+    use utils::set_bit_at;
     #[test]
     fn test_set_bit(){
-        assert_eq!(set_bit(8, 0, 1), 9);
-        assert_eq!(set_bit(0, 1, 1), 2);
-        assert_eq!(set_bit(-8, 1, 1), -6);
+        assert_eq!(set_bit_at(8, 0, 1), 9);
+        assert_eq!(set_bit_at(0, 1, 1), 2);
+        assert_eq!(set_bit_at(-8, 1, 1), -6);
     }
 }
 
@@ -177,7 +175,7 @@ mod test_bin_to_dec {
     fn test_bin_to_dec(){
         assert_eq!(bin_to_dec(&[1,0,1]), 5);
         assert_eq!(bin_to_dec(&[0,0,0]), 0);
-        bin_to_dec(&[5,0,0]);
+        assert_eq!(bin_to_dec(&[5,0,0]), 0);
         assert_eq!(bin_to_dec(&[0,0,0]), 0);
     }
 }
