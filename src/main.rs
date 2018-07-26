@@ -19,32 +19,31 @@ use std::path::Path;
 
 
 fn main() {
-    // Cover
+    // Cover paths
     let wav_path = String::from("examples/cover_audio.wav");
-    // Secrets
-    let secret_text_path = String::from("examples/secret_text.txt");
-    let secret_image_path = String::from("examples/secret_image_lena.png");
-    // Output
-    let secret_out_path = String::from("examples/stego_audio.wav");
-    let extracted_image_out_path = String::from("examples/extracted_image.png");
-    let extracted_text_out_path = String::from("examples/extracted_text.txt");
-    // utils::encoder::lsb_enc(&wav_file, &"examples/stego_audio.wav".to_string(), &secret_text);
+    // Payload paths
+    let payload_text_in = String::from("examples/secret_text.txt");
+    let payload_image_in = String::from("examples/secret_image_lena.png");
+    // Output paths
+    let stego_out = String::from("examples/stego_audio.wav");
+    let payload_image_out = String::from("examples/extracted_image.png");
+    let payload_text_out = String::from("examples/extracted_text.txt");
 
-    // Setup output file for writing
-    if Path::new(&secret_out_path).exists() {
+    // Remove file if it exists to avoid writing over old stego file
+    if Path::new(&stego_out).exists() {
         println!("Removing file.");
-        fs::remove_file(&secret_out_path);
+        fs::remove_file(&stego_out);
     }
 
     println!("Encoding text...");
-    utils::encoder::lsb_enc(&wav_path, &secret_out_path, &secret_text_path);
+    utils::encoder::lsb_enc(&wav_path, &stego_out, &payload_text_in);
 
     println!("Decoding text...");
-    utils::decoder::lsb_dec(&secret_out_path, &extracted_text_out_path);
+    utils::decoder::lsb_dec(&stego_out, &payload_text_out);
 
-    // Setup output file for writing
-    if Path::new(&secret_out_path).exists() {
+    // Remove file
+    if Path::new(&stego_out).exists() {
         println!("Removing file.");
-        fs::remove_file(secret_out_path);
+        fs::remove_file(stego_out);
     }
 }

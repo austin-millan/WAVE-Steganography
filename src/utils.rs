@@ -36,8 +36,8 @@ pub mod encoder {
         let (data_file_metadata, cover_file_metadata) = (fs::metadata(&payload_path).unwrap(), fs::metadata(&wav_path).unwrap());
         // Get length for payload and cover.
         let (secret_len, cover_len) = (data_file_metadata.len() as i32, cover_file_metadata.len() as i32);
-        println!("-> Cover length: {}\n-> Secret data length: {:?} -> (as bytes): {:b}",
-                 cover_len/2, data_file_metadata.len(), data_file_metadata.len());
+        println!("-> Cover length: {}\n-> Secret data length: {:?}",
+                 cover_len/2, data_file_metadata.len());
 
         // `32+(secret_len * 8)`: 4 bytes for storing payload size, + payload data.
         // `samples.len()`: total number of samples available to store 1bit/sample for LSB.
@@ -58,6 +58,7 @@ pub mod encoder {
             i += 1;
         }
         writer.finalize().unwrap();
+        println!("-> Done");
     }
 
     pub fn display_spec(spec: WavSpec) {
@@ -81,19 +82,14 @@ pub mod encoder {
 }
 
 pub mod decoder {
-    use std::fs;
     use std::path::Path;
-    use std::ffi::OsStr;
     use std::vec::Vec;
-    use utils::hound::*;
-    use utils::hound::{WavReader, WavWriter};
-    use std::thread;
-    use std::time;
-    use std::fmt;
-    use utils::set_bit;
+    use utils::hound::{WavReader};
+    //use std::thread;
+    //use std::time;
+    //use utils::set_bit;
     use utils::get_bit_at;
-    use utils::to_decimal;
-    //use utils::to_decimal_arr;
+    use utils::bin_to_dec;
 
     pub fn lsb_dec(stego_in_path: &String, payload_out_path: &String) {
         // IO for reading wav files, samples, ...
@@ -116,15 +112,16 @@ pub mod decoder {
             else{ break; }
             i += 1;
         }
-        let decimal_v = to_decimal(&len_payload);
-        println!("Decimal: {}", decimal_v);
+        let decimal_v = bin_to_dec(&len_payload);
+        println!("-> Secret data length: {}", decimal_v);
+        println!("-> Done");
     }
 }
 
 
 pub fn set_bit(mut bytes: i32, pos: u8, x: u8) -> i32{
     //println!("Bytes (before): {:b}, Decimal (after): {}, x: {:b}", bytes, bytes, x);
-    bytes &= !(1 << pos);
+    bytes &= !1 << pos;
     if x.eq(&1) {
         bytes |= (1 << pos);
     }
@@ -138,11 +135,14 @@ pub fn get_bit_at(bytes: i32, pos: u8) -> bool {
     else { false }
 }
 
-/// arr should be 4 bytes
-pub fn to_decimal(arr: &[u8]) -> i32 { // @todo: make more generic
+/// Converts array of u8 (having values 0 or 1) to a decimal number (from little-endian).
+/// It only skips over non-binary values.
+pub fn bin_to_dec(arr: &[u8]) -> i32 { // @todo: make more generic
     let mut res: i32 = 0;
     for item in arr.iter() {
-        res = res * 2 + *item as i32;
+        if *item == 1 as u8 || *item == 0 as u8 {
+            res = res * 2 + *item as i32;
+        }
     }
     res
 }
@@ -150,24 +150,36 @@ pub fn to_decimal(arr: &[u8]) -> i32 { // @todo: make more generic
 
 #[cfg(test)]
 mod test_set_bit {
-    use utils::encoder;
+    use utils::set_bit;
     #[test]
     fn test_set_bit(){
-        assert_eq!(encoder::set_bit(8, 0, 1), 9);
-        assert_eq!(encoder::set_bit(0, 1, 1), 2);
-        assert_eq!(encoder::set_bit(-8, 1, 1), -6);
+        assert_eq!(set_bit(8, 0, 1), 9);
+        assert_eq!(set_bit(0, 1, 1), 2);
+        assert_eq!(set_bit(-8, 1, 1), -6);
     }
 }
 
 #[cfg(test)]
 mod test_get_bit {
-    use utils::encoder;
+    use utils::get_bit_at;
     #[test]
     fn test_get_bit(){
-        assert_eq!(encoder::get_bit_at(8, 10000), false);
-        assert_eq!(encoder::get_bit_at(8, 8), false);
-        assert_eq!(encoder::get_bit_at(8, 3), true);
-        assert_eq!(encoder::get_bit_at(8, 0), false);
-        assert_eq!(encoder::get_bit_at(-1, 0), true);
+        assert_eq!(get_bit_at(8, 10000), false);
+        assert_eq!(get_bit_at(8, 8), false);
+        assert_eq!(get_bit_at(8, 3), true);
+        assert_eq!(get_bit_at(8, 0), false);
+        assert_eq!(get_bit_at(-1, 0), true);
+    }
+}
+
+#[cfg(test)]
+mod test_bin_to_dec {
+    use utils::bin_to_dec;
+    #[test]
+    fn test_bin_to_dec(){
+        assert_eq!(bin_to_dec(&[1,0,1]), 5);
+        assert_eq!(bin_to_dec(&[0,0,0]), 0);
+        bin_to_dec(&[5,0,0]);
+        assert_eq!(bin_to_dec(&[0,0,0]), 0);
     }
 }
