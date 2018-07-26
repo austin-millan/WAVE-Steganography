@@ -43,7 +43,19 @@ fn main() {
 
     // Remove file
     if Path::new(&stego_out).exists() {
-        println!("Removing file.");
-        fs::remove_file(stego_out);
+        println!("Removing stego file.");
+        fs::remove_file(&stego_out);
+    }
+
+    println!("Encoding image...");
+    utils::encoder::lsb_enc(&wav_path, &stego_out, &payload_image_in);
+
+    println!("Decoding image...");
+    utils::decoder::lsb_dec(&stego_out, &payload_image_out);
+
+    // Remove file
+    if Path::new(&stego_out).exists() {
+        println!("Removing stego file.");
+        fs::remove_file(&stego_out);
     }
 }

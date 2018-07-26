@@ -49,7 +49,7 @@ pub mod encoder {
         // Iterate over samples, store message length
         let mut i: i64 = 0;
         for mut sample in samples.iter_mut() {
-            if i < 16 {
+            if i < 32 {
                 let bit_to_store = get_bit_at(secret_len, i as u8);
                 let bit_to_replace = get_bit_at(**&sample as i32, 0 as u8); // LSB
                 let sample = set_bit(**&sample as i32, 0, bit_to_store as u8);
