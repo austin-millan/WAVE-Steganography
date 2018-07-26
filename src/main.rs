@@ -8,9 +8,7 @@
 
 mod utils;
 
-extern crate image;
 extern crate scramble_image;
-extern crate byteorder;
 
 use std::fs;
 use std::path::Path;
