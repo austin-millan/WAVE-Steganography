@@ -193,16 +193,6 @@ pub fn vec_to_dec(vect: Vec<u8>) -> u8 { // @todo: make more generic
     res
 }
 
-#[cfg(test)]
-mod test_to_decimal {
-    use super::vec_to_dec;
-    #[test]
-    fn it_works() {
-        assert_eq!(vec_to_dec(vec![0, 0, 0, 0, 0, 0, 0, 0]), 0);
-        assert_eq!(vec_to_dec(vec![1, 1, 1, 0, 1, 0, 0, 1]), 233);
-    }
-}
-
 //impl ChaoticMapType {
 //    pub fn whoami(&self) -> String {
 //        match * self {
