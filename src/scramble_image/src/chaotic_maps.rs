@@ -82,20 +82,20 @@ impl ArnoldCatMap { }
 
 /// Henon transformation using DynamicImage
 impl HenonMap {
-    pub fn encrypt(&mut self, mut img: &DynamicImage, dest_path: &Path) -> DynamicImage {
+    pub fn encrypt(&mut self, mut img: &DynamicImage) -> DynamicImage {
         let (width, height) = img.dimensions();
         let henon_map = self.generate_keystream(width, height, true);
-        self.transform_image(img.clone(), dest_path, henon_map)
+        self.transform_image(img.clone(), henon_map)
     }
 
-    pub fn decrypt(&mut self, mut img: &DynamicImage, dest_path: &Path) -> DynamicImage {
+    pub fn decrypt(&mut self, mut img: &DynamicImage) -> DynamicImage {
         let (width, height) = img.dimensions();
         let henon_map = self.generate_keystream(width, height, false);
-        self.transform_image(img.clone(), dest_path, henon_map)
+        self.transform_image(img.clone(), henon_map)
     }
 
     /// Wrapper
-    pub fn transform_image(&mut self, mut img: DynamicImage, dest_path: &Path, henon_map: Vec<Vec<u8>>) -> DynamicImage {
+    pub fn transform_image(&mut self, mut img: DynamicImage, henon_map: Vec<Vec<u8>>) -> DynamicImage {
         let valid = self.is_valid();  // use later when it's implemented
         let (width, height) = img.dimensions();
         let mut noisy = img.brighten(0);
@@ -138,7 +138,7 @@ impl HenonMap {
                 x_n = -(self.parameters.a * x.powf(2.0)) + y + 1.00;
                 y_n = self.parameters.b * x;
             }
-            else {
+            else if encryption == false {
                 x_n = (x - y.powf(2.0) - self.parameters.a)/self.parameters.b;
                 y_n = x;
             }
@@ -179,7 +179,7 @@ impl HenonMap {
 
 /// This function returns the amount of difference between two images as a float.
 /// Based on: https://gkbrk.com/2018/01/evolving-line-art/
-pub fn image_diff(l_path: &Path, r_path: &Path) -> f64 {
+pub fn image_diff(l_path: &String, r_path: &String) -> f64 {
     imageproc::stats::root_mean_squared_error(
         &open(&l_path).unwrap(),
         &open(&r_path).unwrap())
