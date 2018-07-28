@@ -112,7 +112,7 @@ pub mod image_obfuscation {
         /// param encryption: determines whether inverse algorithm is used or not.
         pub fn generate_keystream(&mut self, width: u32, height: u32) -> Vec<Vec<u8>> {
             // (1) choose the initial value of (X1,Y1) for Henon map
-            let (mut x, mut y) = (0.6f64, 0.2f64);
+            let (mut x, mut y) = (self.parameters.x, self.parameters.y);
             let (mut x_n, mut y_n) = (0.1f64, 0.1f64);
 
             // (2) If the image size is m×n then the number of henon sequence will be 8×m×n obtained by
