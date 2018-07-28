@@ -8,12 +8,11 @@
 
 mod utils;
 
-extern crate scramble_image;
+extern crate chaos_image_encryption;
 
 use std::fs;
 use std::path::Path;
 
-// use scramble_image::chaotic_maps::*;
 
 
 fn main() {
@@ -21,7 +20,7 @@ fn main() {
     let wav_path = String::from("examples/cover_audio.wav");
     // Payload paths
     let payload_text_in = String::from("examples/secret_text.txt");
-    let payload_image_in = String::from("examples/secret_image_lena.png");
+    let payload_image_in = String::from("examples/lenna.png");
     // Output paths
     let stego_out = String::from("examples/stego_audio.wav");
     let payload_image_out = String::from("examples/extracted_image.png");

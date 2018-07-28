@@ -2,7 +2,6 @@
 name = "wave-steganography"
 version = "0.1.0"
 authors = ["austin-millan <austin.millan@protonmail.com>"]
-#build = "build.rs"
 
 [dependencies]
 hound = "*"
@@ -10,7 +9,7 @@ derive_builder = "*"
 # dwt = "0.5.2"
 
 [workspace]
-members = ["src/scramble_image"]
+members = ["src/chaos_image_encryption"]
 
-[dependencies.scramble_image]
-path = "src/scramble_image"
+[dependencies.chaos_image_encryption]
+path = "src/chaos_image_encryption"

@@ -42,32 +42,26 @@ To build (and download dependencies):
 
 `$ cargo build`
 
-The first build will take a few minutes as it fetches dependencies from
+The first build will take a few minutes as it builds dependencies from
 [crates.io](https://crates.io/).
-
-```
-$ time cargo build
-...
-real    2m11.613s
-user    4m52.722s
-sys     0m37.476s
-```
 
 
 ## Test
 
-**Note: as of 7/15 no tests exist yet.**
+To run all available tests, run the following from the project
+root:
 
-To run all available tests, run the following from the project root directory:
+`$ cargo test --all`
 
-`$ cargo test`
+
+To run available test for `chaos_image_encryption`
 
 ## Usage
 
-**Run scramble_image
+**Run chaos_image_encryption
 [`main.rs`](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/scramble_image/src/main.rs):**
 
-`$ cargo run -p scramble_image`
+`$ cargo run -p chaos_image_encryption`
 
 
 ## Contributing
@@ -77,25 +71,16 @@ Please see
 ### Issues
 
 - Image Encryption by Henon Chaotic System
-    - [x] Encrypt image using Henon algorithm.
-        - [x] Generate henon sequence.
-        - [x] XOR-op between image and henon sequence.
-        - [ ] Stretch: include image shuffling
-
-    - [x] Decrypt image using Henon algorithm.
-        - [x] Generate (inverse) henon sequence.
-        - [x] XOR-op between image and henon sequence.
-
-- Image Encryption by Arnold Chaotic System
-    - [ ] Encrypt image using Arnold Cat Map algorithm.
-    - [ ] Decrypt image using Henon algorithm.
+    - [x] Generate henon sequence.
+    - [ ] Shuffle pixels of payload.
+    - [x] Mask pixels of payload.
+    - [x] Recover pixels of payload.
 
 - Steganography
-    - [ ] Embed text using LSB.
-    - [ ] Embed binary files using LSB.
-    - [ ] Option to encrypt images using chaotic systems.
-    - [ ] Option to encrypt binary/text files using standard encryption
-    schemes.
+    - [x] Embed payload's length in first four bytes of cover audio.
+    - [x] Extract payload length from first four bytes of cover audio.
+    - [ ] Embed payload in remaining bytes of cover audio.
+    - [ ] Extract payload from remaining bytes of cover audio.
 
 ## License
 

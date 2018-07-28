@@ -1,5 +1,5 @@
 [package]
-name = "scramble_image"
+name = "chaos_image_encryption"
 version = "0.1.0"
 authors = ["austin-millan <austin.millan@protonmail.com>"]
 
@@ -9,5 +9,5 @@ imageproc = "*"
 derive_builder = "*"
 
 [lib]
-name = "scramble_image"
+name = "chaos_image_encryption"
 path = "src/lib.rs"

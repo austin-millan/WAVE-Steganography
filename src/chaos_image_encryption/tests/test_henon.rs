@@ -5,12 +5,12 @@
 #![allow(unused_must_use)]
 #![allow(unused_mut)]
 
-extern crate scramble_image;
+extern crate chaos_image_encryption;
 extern crate image;
 
 #[cfg(test)]
 mod test_to_decimal {
-    use scramble_image::vec_to_dec;
+    use chaos_image_encryption::vec_to_dec;
 
     #[test]
     fn vec_to_decimal() {
@@ -22,9 +22,9 @@ mod test_to_decimal {
 #[cfg(test)]
 mod test_encrypt_decrypt_henon {
     use image::open;
-    use scramble_image::image_diff;
-    use scramble_image::image_obfuscation::HenonMap;
-    use scramble_image::image_obfuscation::HenonMapParametersBuilder;
+    use chaos_image_encryption::image_diff;
+    use chaos_image_encryption::image_obfuscation::HenonMap;
+    use chaos_image_encryption::image_obfuscation::HenonMapParametersBuilder;
 
     #[test]
     fn encrypt_decrypt_lossless() {
