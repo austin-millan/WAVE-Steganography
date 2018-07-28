@@ -98,10 +98,9 @@ pub mod image_obfuscation {
                 for h in 0..(height) {
                     let mut px = img.get_pixel(w, h);
                     let henon_val: u8 = *henon_map.index(h as usize).index(w as usize);
-
-                    px.data[0] = px.data[0] ^ henon_val;
-                    px.data[1] = px.data[1] ^ henon_val;
-                    px.data[2] = px.data[2] ^ henon_val;
+                    px.data[0] ^= henon_val;
+                    px.data[1] ^= henon_val;
+                    px.data[2] ^= henon_val;
                     let res = noisy.put_pixel(w, h, px);
                 }
             }
@@ -113,24 +112,22 @@ pub mod image_obfuscation {
         /// param encryption: determines whether inverse algorithm is used or not.
         pub fn generate_keystream(&mut self, width: u32, height: u32) -> Vec<Vec<u8>> {
             // (1) choose the initial value of (X1,Y1) for Henon map
-            let mut x: f64 = 0.6;
-            let mut y: f64 = 0.2;
-            let mut x_n: f64 = 0.1;
-            let mut y_n: f64 = 0.1;
+            let (mut x, mut y) = (0.6f64, 0.2f64);
+            let (mut x_n, mut y_n) = (0.1f64, 0.1f64);
 
             // (2) If the image size is m×n then the number of henon sequence will be 8×m×n obtained by
             // henon equation (x_n, y_n below).
             let mut sequence_size = width * height * 8;  // correct
-            let mut bit_sequence = Vec::new();
-            let mut byte_array = Vec::new();
+
+            let (mut bit_sequence, mut byte_array) = (Vec::new(), Vec::new());
             let mut t_img_matrix = Vec::new();
 
             // Generate key values using Henon map.
             // Based on: http://www.tjprc.org/publishpapers/--1382093176-2.%20Image%20encryption.full.pdf
             for i in 0..sequence_size { // println!("i: {}", i);
                 // Henon formula
-                x_n = -(1.4 * x.powi(2)) + y + 1.00;
-                y_n = 0.3 * x;
+                x_n = -(self.parameters.a * x.powi(2)) + y + 1.0f64;
+                y_n = self.parameters.b * x;
 
                 // New x and y values for next iteration of henon formula.
                 x = x_n;
@@ -140,7 +137,7 @@ pub mod image_obfuscation {
                 // (3) cut-off point, 0.3992, has been determined so that the sequence is balanced.
                 let mut bit = 0;
                 if x_n < 0.3992 {bit = 0 as u8}
-                else {bit = 1 as u8}
+                    else {bit = 1 as u8}
                 bit_sequence.push(bit);
 
                 // (4) Henon sequence is then reduced by combining each consecutive 8 bits into one decimal value.
