@@ -27,8 +27,9 @@ The following are required:
 
 
 ###  Dependencies
-Project dependencies are managed by Cargo, see
-[Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/Cargo.toml).
+Dependencies are managed using Cargo. See manifest files here:
+- [Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/Cargo.toml) (wave-stegranography)
+- [Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/chaos_image_encryption/Cargo.toml) (chaos-image-encryption)
 
 ## Install / Build
 
@@ -48,18 +49,19 @@ The first build will take a few minutes as it builds dependencies from
 
 ## Test
 
-To run all available tests, run the following from the project
-root:
+Run all tests:
 
 `$ cargo test --all`
 
 
-To run available test for `chaos_image_encryption`
+Run `chaos_image_encryption` tests:
+
+`$ cargo test -p chaos_image_encryption`
 
 ## Usage
 
 **Run chaos_image_encryption
-[`main.rs`](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/scramble_image/src/main.rs):**
+[`bin.rs`](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/scramble_image/src/main.rs):**
 
 `$ cargo run -p chaos_image_encryption`
 
