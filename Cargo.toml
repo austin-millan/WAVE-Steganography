@@ -9,7 +9,7 @@ derive_builder = "*"
 # dwt = "0.5.2"
 
 [lib]
-name = "stego"
+name = "steganography"
 path = "src/lib.rs"
 
 [[bin]]
