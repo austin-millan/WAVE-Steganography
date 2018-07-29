@@ -8,6 +8,14 @@ hound = "*"
 derive_builder = "*"
 # dwt = "0.5.2"
 
+[lib]
+name = "stego"
+path = "src/lib.rs"
+
+[[bin]]
+name = "main"
+path = "src/bin.rs"
+
 [workspace]
 members = ["src/chaos_image_encryption"]
 

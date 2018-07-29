@@ -5,14 +5,13 @@
 //#![allow(unused_must_use)]
 //#![allow(unused_mut)]
 
-
-mod utils;
-
 extern crate chaos_image_encryption;
+extern crate stego;
 
 use std::fs;
 use std::path::Path;
-
+use stego::encoder;
+use stego::decoder;
 
 
 fn main() {
@@ -33,10 +32,11 @@ fn main() {
     }
 
     println!("Encoding text...");
-    utils::encoder::lsb_enc(&wav_path, &stego_out, &payload_text_in);
+
+    encoder::lsb_enc(&wav_path, &stego_out, &payload_text_in);
 
     println!("Decoding text...");
-    utils::decoder::lsb_dec(&stego_out, &payload_text_out);
+    decoder::lsb_dec(&stego_out, &payload_text_out);
 
     // Remove file
     if Path::new(&stego_out).exists() {
@@ -45,10 +45,10 @@ fn main() {
     }
 
     println!("Encoding image...");
-    utils::encoder::lsb_enc(&wav_path, &stego_out, &payload_image_in);
+    encoder::lsb_enc(&wav_path, &stego_out, &payload_image_in);
 
     println!("Decoding image...");
-    utils::decoder::lsb_dec(&stego_out, &payload_image_out);
+    decoder::lsb_dec(&stego_out, &payload_image_out);
 
     // Remove file
     if Path::new(&stego_out).exists() {

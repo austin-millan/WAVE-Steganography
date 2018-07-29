@@ -5,18 +5,18 @@
 //#![allow(unused_must_use)]
 //#![allow(unused_mut)]
 
-
 extern crate hound;
+
 
 pub mod encoder {
     use std::fs::metadata;
     use std::path::Path;
     use std::ffi::OsStr;
     use std::vec::Vec;
-    use utils::hound::*;
-    use utils::hound::{WavReader, WavWriter};
-    use utils::set_bit_at;
-    use utils::get_bit_at;
+    use hound::*;
+    use hound::{WavReader, WavWriter};
+    use super::set_bit_at;
+    use super::get_bit_at;
 
     /// param in_path: Path of WAV file
     /// Stores data of file `data_path` in the LSB of every sample found in `cover_in_path`,
@@ -82,14 +82,16 @@ pub mod encoder {
 }
 
 pub mod decoder {
+    use std::fs::metadata;
     use std::path::Path;
+    use std::ffi::OsStr;
     use std::vec::Vec;
-    use utils::hound::{WavReader};
-    //use std::thread;
-    //use std::time;
-    //use utils::set_bit;
-    use utils::get_bit_at;
-    use utils::bin_to_dec;
+    use hound::*;
+    use hound::{WavReader, WavWriter};
+    use set_bit_at;
+    use get_bit_at;
+    use bin_to_dec;
+
 
     pub fn lsb_dec(stego_in_path: &String, payload_out_path: &String) {
         // IO for reading wav files, samples, ...
@@ -146,7 +148,7 @@ pub fn bin_to_dec(arr: &[u8]) -> i32 { // @todo: make more generic
 
 #[cfg(test)]
 mod test_set_bit {
-    use utils::set_bit_at;
+    use set_bit_at;
     #[test]
     fn test_set_bit(){
         assert_eq!(set_bit_at(8, 0, 1), 9);
@@ -157,7 +159,7 @@ mod test_set_bit {
 
 #[cfg(test)]
 mod test_get_bit {
-    use utils::get_bit_at;
+    use get_bit_at;
     #[test]
     fn test_get_bit(){
         assert_eq!(get_bit_at(8, 10000), false);
@@ -170,7 +172,7 @@ mod test_get_bit {
 
 #[cfg(test)]
 mod test_bin_to_dec {
-    use utils::bin_to_dec;
+    use bin_to_dec;
     #[test]
     fn test_bin_to_dec(){
         assert_eq!(bin_to_dec(&[1,0,1]), 5);
