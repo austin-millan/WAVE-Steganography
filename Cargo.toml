@@ -6,7 +6,9 @@ authors = ["austin-millan <austin.millan@protonmail.com>"]
 [dependencies]
 hound = "*"
 derive_builder = "*"
+byteorder = "*"
 # dwt = "0.5.2"
+read-byte-slice = "*"
 
 [lib]
 name = "steganography"

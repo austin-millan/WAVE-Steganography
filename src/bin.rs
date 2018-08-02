@@ -23,6 +23,13 @@ fn main() {
     let payload_image_out = String::from("examples/extracted_image.png");
     let payload_text_out = String::from("examples/extracted_text.txt");
 
+//    println!("Payload (text) filename length: {}", payload_text_in.chars().count());
+//    println!("Payload (image) filename length: {}", payload_text_in.chars().count());
+//    println!("Cover filename length: {}", wav_path.chars().count());
+//    println!("Stego filename length: {}", stego_out.chars().count());
+//    println!("Extracted (text) filename length: {}", payload_text_out.chars().count());
+
+
     // Remove file if it exists to avoid writing over old stego file
     if Path::new(&stego_out).exists() {
         println!("Removing file.");
@@ -30,10 +37,9 @@ fn main() {
     }
     // wav_path: &String, stego_out_path: &String, payload_path: &String
     println!("Encoding text...");
-    stego::lsb::enc_length(&wav_path, &stego_out, &payload_text_in);
-
-    println!("Decoding text...");
-    stego::lsb::dec_length(&stego_out, &payload_text_out);
+    stego::lsb::enc_payload(&wav_path, &stego_out, &payload_text_in, 2u8);
+    //println!("Decoding text...");
+    stego::lsb::dec_payload(&stego_out, &payload_text_out, 2u8);
 
     // Remove file
     if Path::new(&stego_out).exists() {
@@ -41,11 +47,12 @@ fn main() {
         fs::remove_file(&stego_out).unwrap();
     }
 
-    println!("Encoding image...");
-    stego::lsb::enc_length(&wav_path, &stego_out, &payload_image_in);
+    //println!("Encoding image...");
+//    stego::lsb::enc_payload(&wav_path, &stego_out, &payload_image_in, 1u8);
+//
+//    //println!("Decoding image...");
+//    stego::lsb::dec_payload(&stego_out, &payload_image_out, 1u8);
 
-    println!("Decoding image...");
-    stego::lsb::dec_length(&stego_out, &payload_image_out);
 
     // Remove file
     if Path::new(&stego_out).exists() {
