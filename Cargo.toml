@@ -9,6 +9,9 @@ derive_builder = "*"
 byteorder = "*"
 # dwt = "0.5.2"
 read-byte-slice = "*"
+bytes = "*"
+# stfu8 = "*"
+# base64 = "*"
 
 [lib]
 name = "steganography"
