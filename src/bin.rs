@@ -35,7 +35,7 @@ fn main() {
         println!("Removing file.");
         fs::remove_file(&stego_out).unwrap();
     }
-//     wav_path: &String, stego_out_path: &String, payload_path: &String
+
     println!("Encoding text...");
     stego::lsb::enc_payload(&wav_path, &stego_out, &payload_text_in, 2u8);
     //println!("Decoding text...");
@@ -47,11 +47,11 @@ fn main() {
         fs::remove_file(&stego_out).unwrap();
     }
 
-//    println!("Encoding image...");
-//    stego::lsb::enc_payload(&wav_path, &stego_out, &payload_image_in, 1u8);
-//
-//    //println!("Decoding image...");
-//    stego::lsb::dec_payload(&stego_out, &payload_image_out, 1u8);
+    println!("Encoding image...");
+    stego::lsb::enc_payload(&wav_path, &stego_out, &payload_image_in, 1u8);
+
+    println!("Decoding image...");
+    stego::lsb::dec_payload(&stego_out, &payload_image_out, 1u8);
 
 
     // Remove file
