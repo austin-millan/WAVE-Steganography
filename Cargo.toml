@@ -7,6 +7,7 @@ authors = ["austin-millan <austin.millan@protonmail.com>"]
 hound = "*"
 derive_builder = "*"
 read-byte-slice = "*"
+clap = { version = "2", features = ["yaml"] }
 
 [lib]
 name = "steganography"

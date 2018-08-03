@@ -62,6 +62,9 @@ pub mod stego {
             // IO for reading wav files, samples, ...
             let mut reader = WavReader::open(&stego_in_path).unwrap();
             let spec = reader.spec();
+            let mut i = 0;
+            let mut bits = [0u8; 8];
+            let mut payload_vec: Vec<u8> = Vec::new();
 
             // Read 16-bit samples
             let samples: Vec<i16> = reader.samples()
@@ -69,7 +72,6 @@ pub mod stego {
                 .collect();
 
             // Decode length of payload
-            let mut i: i64 = 0;
             let mut len_payload = [0u8; 32];
             for mut sample in &samples[0..32 as usize] {
                 if get_bit_at(**&sample as i32, 0)
@@ -78,22 +80,15 @@ pub mod stego {
             }
 
             let len_payload = bin_to_dec(&len_payload);
-            let mut bits = [0u8; 8];
-            let mut i = 0;
-            let mut payload_vec: Vec<u8> = Vec::new();
             let mut file_buffer = File::create(payload_out_path).unwrap();
-            let mut sample_i = 0;
-
             for mut sample in &samples[32..32+(len_payload*8) as usize] {
-                sample_i += 1;
                 if get_bit_at(**&sample as i32, 0)
                     { bits[(7-i as u8) as usize] = 1;}
                 else
                     { bits[(7-i as u8) as usize] = 0;}
                 i += 1;
                 if (i% 8 == 0)  && i != 0 {
-                    let val = bin_to_dec(&bits) as u8;
-                    payload_vec.push(val);
+                    payload_vec.push(bin_to_dec(&bits) as u8);
                     bits = [0u8; 8];
                     i = 0;
                 }
