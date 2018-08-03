@@ -81,8 +81,8 @@ Please see
 - Steganography
     - [x] Embed payload's length in first four bytes of cover audio.
     - [x] Extract payload length from first four bytes of cover audio.
-    - [ ] Embed payload in remaining bytes of cover audio.
-    - [ ] Extract payload from remaining bytes of cover audio.
+    - [x] Embed payload in remaining bytes of cover audio.
+    - [x] Extract payload from remaining bytes of cover audio.
 
 ## License
 
