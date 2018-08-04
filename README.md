@@ -21,7 +21,7 @@ technique is based on algorithms described
 ## Setup
 ### Prerequisites
 The following are required:
-* [Rust](https://www.rust-lang.org/en-US/install.html)
+* [Rust (>1.0)](https://www.rust-lang.org/en-US/install.html)
 * [Cargo](https://doc.rust-lang.org/cargo/)
 * [Git](https://git-scm.com/downloads)
 
@@ -31,15 +31,13 @@ Dependencies are managed using Cargo. See manifest files here:
 - [Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/Cargo.toml) (wave-stegranography)
 - [Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/chaos_image_encryption/Cargo.toml) (chaos-image-encryption)
 
-## Install / Build
+## Download / Build
 
-This project is currently only available through Github (not [crates.io](https://crates.io/))
+Download using Git:
 
-To download using Git:
+`$ git clone https://github.com/austin-millan/WAVE-Steganography.git; cd WAVE-Steganography/`
 
-`$ git clone https://github.com/austin-millan/WAVE-Steganography.git`
-
-To build (and download dependencies):
+Build (download dependencies):
 
 `$ cargo build`
 
@@ -70,19 +68,14 @@ Run `chaos_image_encryption` tests:
 Please see
 [CONTRIBUTING.md](https://github.com/austin-millan/WAVE-Steganography/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
-### Issues
+### Known Issues
+
+- General
+    - [ ] Still requires additional testing.
 
 - Image Encryption by Henon Chaotic System
-    - [x] Generate henon sequence.
-    - [ ] Shuffle pixels of payload.
-    - [x] Mask pixels of payload.
-    - [x] Recover pixels of payload.
-
-- Steganography
-    - [x] Embed payload's length in first four bytes of cover audio.
-    - [x] Extract payload length from first four bytes of cover audio.
-    - [x] Embed payload in remaining bytes of cover audio.
-    - [x] Extract payload from remaining bytes of cover audio.
+    - [ ] "Confusion" isn't reached with current image encryption system. Only "diffusion" based on pixel values.
+    - [ ] The size of unencrypted image does not match exactly with original image, even with lossless formats like PNG.
 
 ## License
 
