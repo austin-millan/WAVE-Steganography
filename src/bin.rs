@@ -1,63 +1,7 @@
-// For dev
-#![allow(dead_code)]
-// #![allow(unused_imports)]
-#![allow(unused_variables)]
-//#![allow(unused_must_use)]
-//#![allow(unused_mut)]
-
-
 extern crate chaos_image_encryption;
 extern crate steganography;
 extern crate clap;
 
-
-
-//    // Cover paths
-//    let wav_path = String::from("examples/cover_audio.wav");
-//    // Payload paths
-//    let payload_text_in = String::from("examples/secret_text.txt");
-//    let payload_image_in = String::from("examples/lenna.png");
-//    // Output paths
-//    let stego_out = String::from("examples/stego_audio.wav");
-//    let payload_image_out = String::from("examples/extracted_image.png");
-//    let payload_text_out = String::from("examples/extracted_text.txt");
-
-//    println!("Payload (text) filename length: {}", payload_text_in.chars().count());
-//    println!("Payload (image) filename length: {}", payload_text_in.chars().count());
-//    println!("Cover filename length: {}", wav_path.chars().count());
-//    println!("Stego filename length: {}", stego_out.chars().count());
-//    println!("Extracted (text) filename length: {}", payload_text_out.chars().count());
-
-
-//    // Remove file if it exists to avoid writing over old stego file
-//    if Path::new(&stego_out).exists() {
-//        println!("Removing file.");
-//        fs::remove_file(&stego_out).unwrap();
-//    }
-//
-//    println!("Encoding text...");
-//    stego::lsb::enc_payload(&wav_path, &stego_out, &payload_text_in, 2u8);
-//    //println!("Decoding text...");
-//    stego::lsb::dec_payload(&stego_out, &payload_text_out, 2u8);
-//
-//    // Remove file
-//    if Path::new(&stego_out).exists() {
-//        println!("Removing stego file.");
-//        fs::remove_file(&stego_out).unwrap();
-//    }
-//
-//    println!("Encoding image...");
-//    stego::lsb::enc_payload(&wav_path, &stego_out, &payload_image_in, 1u8);
-//
-//    println!("Decoding image...");
-//    stego::lsb::dec_payload(&stego_out, &payload_image_out, 1u8);
-//
-//
-//    // Remove file
-//    if Path::new(&stego_out).exists() {
-//        println!("Removing stego file.");
-//        fs::remove_file(&stego_out).unwrap();
-//    }
 
 //#[cfg(not(feature = "yaml"))]
 fn main() {
@@ -66,51 +10,44 @@ fn main() {
     use clap::SubCommand;
     use chaos_image_encryption::image_obfuscation::*;
     use chaos_image_encryption::image_obfuscation::HenonMapParametersBuilder;
-    // As stated above, if clap is not compiled with the YAML feature, it is disabled.
-    println!("YAML feature is disabled.");
-    println!("Pass --features yaml to cargo when trying this example.");
+    use steganography::stego;
+    use std::path::Path;
+    use std::fs;
 
     let matches = App::new("Wave-Steganography")
                           .version("0.1")
                           .author("Austin M. <austin.millan@gmail.com>")
-                          .about("LSB Steganography")
+                          .about("LSB Steganography on WAV Files")
                           .subcommand(SubCommand::with_name("steg")
                                       .about("Embed payload in WAV file.")
                                       .version("0.1")
                                       .arg(Arg::with_name("cover")
+                                           .index(1)
                                            .short("c")
                                            .long("cover")
                                            .help("Path of Wave audio file to be used in embedding payload.")
                                            .takes_value(true)
                                            .value_name("COVER_PATH")
                                            .required(true))
-                                      .arg(Arg::with_name("payload")
-                                           .short("p")
-                                           .long("payload")
-                                           .help("Path of file to embed in cover Wave audio file.")
+                                      .arg(Arg::with_name("secret")
+                                           .index(2)
+                                           .long("secret")
+                                           .help("Path of file to encrypt and/or embed in cover Wave audio file.")
                                            .takes_value(true)
                                            .value_name("SECRET_PATH")
                                            .required(true))
                                       .arg(Arg::with_name("outfile")
+                                           .index(3)
                                            .short("o")
                                            .long("outfile")
                                            .help("Destination path for stego audio file.")
                                            .takes_value(true)
-                                           .value_name("DEST_PATH")
-                                           .required(false))
-                                      .arg(Arg::with_name("obfuscation")
-                                           .short("f")
-                                           .long("obfuscate")
-                                           .help("The pixels of payload image are masked using chaotic henon map.")
-                                           .takes_value(true)
-                                           .value_name("OBFUSCATE")
-                                           .required(false))
-                                      .arg(Arg::with_name("encryption")
+                                           .value_name("OUTFILE_PATH")
+                                           .required(true))
+                                      .arg(Arg::with_name("encrypt")
                                            .short("e")
                                            .long("encrypt")
-                                           .help("<NotImplemented>Payload file is encrypted using RSA.<NotImplemented>")
-                                           .takes_value(true)
-                                           .value_name("ENCRYPT")
+                                           .help("The pixels of secret image are encrypted using chaotic henon sequences as a keystream.")
                                            .required(false))
                                       .arg(Arg::with_name("verbose")
                                            .short("v")
@@ -121,65 +58,138 @@ fn main() {
                                       .about("Extract payload in WAV file.")
                                       .version("0.1")
                                       .arg(Arg::with_name("stegofile")
-                                           .short("s")
+                                           .index(1)
                                            .long("stego")
-                                           .help("Path of Wave audio file to extract payload from.")
+                                           .help("Path of Wave audio file to extract secret from.")
                                            .takes_value(true)
-                                           .value_name("STEGO")
+                                           .value_name("STEGO_PATH")
                                            .required(true))
                                       .arg(Arg::with_name("outfile")
+                                           .index(2)
                                            .short("o")
                                            .long("outfile")
-                                           .help("Destination path for extracted payload.")
+                                           .help("Destination path for extracted secret.")
                                            .takes_value(true)
-                                           .value_name("OUTFILE")
-                                           .required(false))
-                                      .arg(Arg::with_name("obfuscation")
-                                           .short("f")
-                                           .long("obfuscate")
-                                           .help("The pixels of payload image are reverted to their original values using chaotic henon map.")
-                                           .takes_value(true)
-                                           .value_name("OBFUSCATE")
-                                           .required(false))
-                                      .arg(Arg::with_name("encryption")
-                                           .short("e")
-                                           .long("encrypt")
-                                           .help("<NotImplemented>Payload file is decrypted using RSA.<NotImplemented>")
-                                           .takes_value(true)
-                                           .value_name("ENCRYPT")
+                                           .value_name("OUTFILE_PATH")
+                                           .required(true))
+                                      .arg(Arg::with_name("decrypt")
+                                           .short("d")
+                                           .long("decrypt")
+                                           .help("The pixels of secret image are decrypted using chaotic henon sequences as a keystream.")
                                            .required(false))
                                       .arg(Arg::with_name("verbose")
                                            .short("v")
                                            .long("verbose")
                                            .help("Sets the level of verbosity")
                                            .multiple(true)))
+                          .subcommand(SubCommand::with_name("encrypt")
+                                      .about("The pixels of secret image are encrypted using chaotic henon sequences as a keystream.")
+                                      .version("0.1")
+                                      .arg(Arg::with_name("secret")
+                                           .index(1)
+                                           .short("s")
+                                           .long("secret")
+                                           .help("Path of image file to encrypt.")
+                                           .takes_value(true)
+                                           .value_name("SECRET_PATH")
+                                           .required(true))
+                                      .arg(Arg::with_name("outfile")
+                                           .index(2)
+                                           .short("o")
+                                           .long("outfile")
+                                           .help("Destination path for encrypted image.")
+                                           .takes_value(true)
+                                           .value_name("OUTFILE_PATH")
+                                           .required(true)))
+                          .subcommand(SubCommand::with_name("decrypt")
+                                      .about("Pixels of the secret image are decrypted using chaotic henon sequences as a keystream.")
+                                      .version("0.1")
+                                      .arg(Arg::with_name("secret")
+                                           .index(1)
+                                           .short("s")
+                                           .long("Path of image file to decrypt.")
+                                           .help("The ")
+                                           .takes_value(true)
+                                           .value_name("SECRET_PATH")
+                                           .required(true))
+                                      .arg(Arg::with_name("outfile")
+                                           .index(2)
+                                           .short("o")
+                                           .long("outfile")
+                                           .help("Destination path for decrypted image.")
+                                           .takes_value(true)
+                                           .value_name("OUTFILE_PATH")
+                                           .required(true)))
                           .get_matches();
 
+    // STEG
     if let Some(matches) = matches.subcommand_matches("steg") {
-        if matches.is_present("obfuscation") {
-            println!("Printing obfuscation info...");
+        let img_path = "TEMP-IMG-ENC.png".to_string();
+        // STEGANOGRAPHY + USE OF IMAGE ENCRYPTION
+        if matches.is_present("encrypt") {
+            if let Some(secret_path) = matches.value_of("secret") {
+                let mut henon = HenonMap{parameters: HenonMapParametersBuilder::default()
+                        .build()
+                        .unwrap()};
+                henon.transform(&secret_path.to_string(), &img_path);
+            }
+            stego::lsb::enc_payload(&matches.value_of("cover").unwrap().to_string(),
+                                    &matches.value_of("outfile").unwrap().to_string(),
+                                    &img_path,
+                                    2u8);
+            if Path::new(&img_path).exists() {
+                fs::remove_file(&img_path).unwrap();
+            }
+        }
+        else {
+            stego::lsb::enc_payload(&matches.value_of("cover").unwrap().to_string(),
+                                    &matches.value_of("outfile").unwrap().to_string(),
+                                    &matches.value_of("secret").unwrap().to_string(),
+                                    2u8);
+        }
+
+    }
+    // UNSTEG
+    else if let Some(matches) = matches.subcommand_matches("unsteg") {
+        let img_path = "TEMP-IMG-DEC.png".to_string();
+        if matches.is_present("decrypt") {
+            stego::lsb::dec_payload(&matches.value_of("stegofile").unwrap().to_string(),
+                                    &img_path.to_string(),
+                                    2u8);
             let mut henon = HenonMap{parameters: HenonMapParametersBuilder::default()
                     .build()
                     .unwrap()};
+            henon.transform(&img_path, &matches.value_of("outfile").unwrap().to_string());
+            if Path::new(&img_path).exists() {
+                fs::remove_file(&img_path).unwrap();
+            }
         }
-         else { }
-        if matches.is_present("payload") {
-            println!("Printing payload info...");
+        else {
+            stego::lsb::dec_payload(&matches.value_of("stegofile").unwrap().to_string(),
+                                    &matches.value_of("outfile").unwrap().to_string(),
+                                    2u8);
         }
-         else { }
-        if matches.is_present("outfile") {
-            println!("Printing outfile info...");
-        }
-         else { }
     }
-    else if let Some(matches) = matches.subcommand_matches("unsteg") {
-        if matches.is_present("cover") {
-            println!("Printing cover info...");
+    // ENCRYPT ONLY
+    else if let Some(matches) = matches.subcommand_matches("encrypt") {
+        let outfile_path = matches.value_of("outfile").unwrap().to_string();
+        // STEGANOGRAPHY + IMAGE ENCRYPTION
+        if let Some(secret_path) = matches.value_of("secret") {
+            let mut henon = HenonMap{parameters: HenonMapParametersBuilder::default()
+                    .build()
+                    .unwrap()};
+            henon.transform(&secret_path.to_string(), &outfile_path.to_string());
         }
-         else { }
-        if matches.is_present("outfile") {
-            println!("Printing outfile info...");
+    }
+    // DECRYPT ONLY
+    else if let Some(matches) = matches.subcommand_matches("decrypt") {
+        let outfile_path = matches.value_of("outfile").unwrap().to_string();
+        // STEGANOGRAPHY + IMAGE ENCRYPTION
+        if let Some(secret_path) = matches.value_of("secret") {
+            let mut henon = HenonMap{parameters: HenonMapParametersBuilder::default()
+                    .build()
+                    .unwrap()};
+            henon.transform(&secret_path.to_string(), &outfile_path.to_string());
         }
-         else { }
     }
 }
