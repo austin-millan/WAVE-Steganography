@@ -58,10 +58,22 @@ Run `chaos_image_encryption` tests:
 
 ## Usage
 
-**Run chaos_image_encryption
-[`bin.rs`](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/scramble_image/src/main.rs):**
+Steganography
 
-`$ cargo run -p chaos_image_encryption`
+```
+USAGE:
+    main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <OUTFILE_PATH>
+
+    main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH>
+```
+
+Image Encryption
+```
+USAGE:
+    main encrypt <SECRET_PATH> <OUTFILE_PATH>
+
+    main decrypt <SECRET_PATH> <OUTFILE_PATH>
+```
 
 
 ## Contributing
@@ -75,7 +87,7 @@ Please see
 
 - Image Encryption by Henon Chaotic System
     - [ ] "Confusion" isn't reached with current image encryption system. Only "diffusion" based on pixel values.
-    - [ ] The size of unencrypted image does not match exactly with original image, even with lossless formats like PNG.
+    - [ ] The size of decrypted image does not match exactly with original image, even with lossless formats like PNG.
 
 ## License
 
