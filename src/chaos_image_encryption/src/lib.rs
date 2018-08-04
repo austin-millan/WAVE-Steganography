@@ -1,24 +1,16 @@
-// For dev
-#![allow(dead_code)]
-//#![allow(unused_imports)]
-#![allow(unused_variables)]
-#![allow(unused_must_use)]
-#![allow(unused_mut)]
-
 #[macro_use] extern crate derive_builder;
 extern crate image;
 extern crate imageproc;
 use derive_builder::*;
 
 pub mod image_obfuscation {
-    use image::*;
-    use image::{GenericImage};
+    use image::open;
+    use image::{DynamicImage, GenericImage};
     use imageproc;
     use std::path::Path;
     use std::vec::*;
     use std::ops::*;
     use vec_to_dec;
-
 
     pub struct ArnoldCatMap  {
         pub parameters: ArnoldCatMapParameters
@@ -87,7 +79,11 @@ pub mod image_obfuscation {
     impl ArnoldCatMap { }
     /// Henon transformation using DynamicImage
     impl HenonMap {
-        /// Main
+        /// Wrapper
+        pub fn transform(&mut self, input_path: &String, output_path: &String) {
+            self.transform_image(open(&input_path).unwrap().clone()).save(output_path).unwrap();
+        }
+
         pub fn transform_image(&mut self, mut img: DynamicImage) -> DynamicImage {
             let valid = self.is_valid();  // use later when it's implemented
             let (width, height) = img.dimensions();
@@ -162,16 +158,6 @@ pub mod image_obfuscation {
             // ...fill in later
         }
     }
-    //impl ChaoticMapType {
-    //    pub fn whoami(&self) -> String {
-    //        match * self {
-    //            ChaoticMapType::ArnoldCatMap{parameters: ref _a} => format!("ArnoldCatMap"),
-    //            ChaoticMapType::HenonMap{parameters: ref _a} => format!("HenonMap"),
-    //            ChaoticMapType::SingerMapParameters{parameters: ref _a} => format!("SingerMapParameters"),
-    //            _ => format!("")
-    //        }
-    //    }
-    //}
 }
 
 
