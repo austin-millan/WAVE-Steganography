@@ -1,18 +1,11 @@
-// For dev
-//#![allow(dead_code)]
-//#![allow(unused_imports)]
-//#![allow(unused_variables)]
-//#![allow(unused_must_use)]
-//#![allow(unused_mut)]
-
 extern crate hound;
 extern crate read_byte_slice;
 
 pub mod stego {
     pub mod lsb {
         use std::fs::metadata;
-        use std::io::prelude::*;
         use std::fs::File;
+        use std::io::prelude::*;
         use std::ops::Index;
         use std::vec::Vec;
         use hound::{WavReader, WavWriter, WavSpec};
@@ -21,10 +14,10 @@ pub mod stego {
         use get_bit_at;
         use bin_to_dec;
 
-        pub fn enc_payload(wav_path: &String, stego_out_path: &String, payload_path: &String, lsb_depth: u8) {
+        pub fn enc_payload(wav_path: &String, stego_out_path: &String, payload_path: &String, _lsb_depth: u8) {
             let mut reader = WavReader::open(&wav_path).unwrap();
-            let spec = reader.spec();
-            let mut writer = WavWriter::create(&stego_out_path,spec).unwrap();
+//            let spec = reader.spec();
+            let mut writer = WavWriter::create(&stego_out_path,reader.spec()).unwrap();
 
             let payload = File::open(payload_path).unwrap();
 
@@ -55,13 +48,16 @@ pub mod stego {
                      }
                 }
             }
+            for mut sample in &samples[sample_i as usize..] {
+                writer.write_sample(*sample as i16).unwrap();
+            }
+
             writer.finalize().unwrap();
         }
 
-        pub fn dec_payload(stego_in_path: &String, payload_out_path: &String, lsb_depth: u8) {
+        pub fn dec_payload(stego_in_path: &String, payload_out_path: &String, _lsb_depth: u8) {
             // IO for reading wav files, samples, ...
             let mut reader = WavReader::open(&stego_in_path).unwrap();
-            let spec = reader.spec();
             let mut i = 0;
             let mut bits = [0u8; 8];
             let mut payload_vec: Vec<u8> = Vec::new();
@@ -82,6 +78,18 @@ pub mod stego {
             let len_payload = bin_to_dec(&len_payload);
             let mut file_buffer = File::create(payload_out_path).unwrap();
             for mut sample in &samples[32..32+(len_payload*8) as usize] {
+                if get_bit_at(**&sample as i32, 0)
+                    { bits[(7-i as u8) as usize] = 1;}
+                else
+                    { bits[(7-i as u8) as usize] = 0;}
+                i += 1;
+                if (i% 8 == 0)  && i != 0 {
+                    payload_vec.push(bin_to_dec(&bits) as u8);
+                    bits = [0u8; 8];
+                    i = 0;
+                }
+            }
+            for mut sample in &samples[32+(len_payload*8) as usize..] {
                 if get_bit_at(**&sample as i32, 0)
                     { bits[(7-i as u8) as usize] = 1;}
                 else
