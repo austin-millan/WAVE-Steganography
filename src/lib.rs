@@ -52,7 +52,7 @@ pub mod stego {
                  for byte in chunk.iter(){
                      for bit_i in 0..8{
                          let bit_to_store = get_bit_at(*byte as i32, bit_i);
-                         let mut steg_sample = set_bit_at(**&samples.index(sample_i) as i32, 0, bit_to_store as u8);
+                         let mut steg_sample = set_bit_at(**&samples.index(sample_i) as i32, 0u8, bit_to_store as u8);
                          let _res = match writer.write_sample(steg_sample as i16){
                              Err(_e) => return Err("Error writing out sample to audio file."),
                              Ok(_w) => _w,
@@ -70,39 +70,44 @@ pub mod stego {
         }
 
         pub fn dec_payload(stego_in_path: &String, payload_out_path: &String, _lsb_depth: u8) -> Result<(), &'static str> {
+            let mut i: u8 = 0;
+            let mut bits = [0u8; 8];
+            let mut payload_vec: Vec<u8> = Vec::new();
             // IO for reading wav files, samples, ...
             let mut reader = match WavReader::open(&stego_in_path) {
                 Err(_e) => return Err("Error opening input WAV file for steganography."),
                 Ok(_r) => _r,
             };
-            let mut i = 0;
-            let mut bits = [0u8; 8];
-            let mut payload_vec: Vec<u8> = Vec::new();
-
+            if reader.spec().bits_per_sample != 16 {
+                return Err("Error: WAV file must contain only 16-bit samples.");
+            }
             // Read 16-bit samples
             let samples: Vec<i16> = reader.samples()
                 .map(|s| s.unwrap())
                 .collect();
-
+            if samples.len() < 32 {
+                return Err("Error attempting to decode length of payload. The first 32 samples are \
+                used to store this data, and this WAV file has < 32 samples total.");
+            }
             // Decode length of payload
             let mut len_payload = [0u8; 32];
             for mut sample in &samples[0..32 as usize] {
                 if get_bit_at(**&sample as i32, 0)
-                    { len_payload[(31 - i as u8) as usize] = 1; }
-                    else { len_payload[(31 - i as u8) as usize] = 0; }
+                    { len_payload[(31u8 - i) as usize] = 1; }
+                    else { len_payload[(31u8 - i) as usize] = 0; }
                 i += 1;
             }
             i = 0;
             let len_payload_dec = bin_to_dec(&len_payload);
 
-            if len_payload_dec*8 > samples.len() as i32 {
+            if len_payload_dec*8 as i32 > samples.len() as i32 - 32i32 {
                 return Err("Length of payload is too large to decode from stego audio file.");
             }
             for mut sample in &samples[32..32+(len_payload_dec*8) as usize] {
                 if get_bit_at(**&sample as i32, 0)
-                    { bits[(7-i as u8) as usize] = 1;}
+                    { bits[(7u8 - i) as usize] = 1;}
                 else
-                    { bits[(7-i as u8) as usize] = 0;}
+                    { bits[(7u8 - i) as usize] = 0;}
                 i += 1;
                 if (i% 8 == 0)  && i != 0 {
                     payload_vec.push( bin_to_dec(&bits) as u8);
@@ -110,7 +115,6 @@ pub mod stego {
                     i = 0;
                 }
             }
-
             let mut file_buffer = match File::create(&payload_out_path) {
                 Err(_e) => return Err("Error creating payload/secret destination path for steganography."),
                 Ok(_w) => _w,

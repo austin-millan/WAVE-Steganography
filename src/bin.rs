@@ -131,53 +131,62 @@ fn main() {
                           .get_matches();
     // try_me example
     if let Some(_matches) = matches.subcommand_matches("try_me") {
-        let mut henon = HenonMap{parameters: HenonMapParametersBuilder::default()
-                .build()
-                .unwrap()};
-        if Path::new(&"examples/lenna_encrypted.png").exists() {
-            println!("Removing...");
-            fs::remove_file(&"examples/lenna_encrypted.png").unwrap();
+        {   // Cleanup examples dir
+            if Path::new(&"examples/lenna_encrypted.png").exists() {
+                fs::remove_file(&"examples/lenna_encrypted.png").unwrap();
+            }
+            if Path::new(&"examples/lenna_decrypted.png").exists() {
+                fs::remove_file(&"examples/lenna_decrypted.png").unwrap();
+            }
+            if Path::new(&"examples/stego_audio.wav").exists() {
+                fs::remove_file(&"examples/stego_audio.wav").unwrap();
+            }
+            if Path::new(&"examples/extracted.txt").exists() {
+                println!("Removing...");
+                fs::remove_file(&"examples/extracted.txt").unwrap();
+            }
+            if Path::new(&"examples/extracted_image.png").exists() {
+                println!("Removing...");
+            }
         }
-        if Path::new(&"examples/lenna_decrypted.png").exists() {
-            println!("Removing...");
-            fs::remove_file(&"examples/lenna_decrypted.png").unwrap();
+
+        {   // Image encryption
+            let mut henon = HenonMap{parameters: HenonMapParametersBuilder::default()
+                    .build()
+                    .unwrap()};
+            if let Err(e) = henon.transform(&"examples/lenna.png".to_string(), &"examples/lenna_encrypted.png".to_string()) {
+                println!("Error encrypting file: {:?}", e);
+            };
+            if let Err(e) = henon.transform(&"examples/lenna_encrypted.png".to_string(), &"examples/lenna_decrypted.png".to_string()) {
+                println!("Error encrypting file: {:?}", e);
+            };
         }
-        if Path::new(&"examples/stego_audio.wav").exists() {
-            println!("Removing...");
-            fs::remove_file(&"examples/stego_audio.wav").unwrap();
-        }
-        if Path::new(&"examples/extracted.txt").exists() {
-            println!("Removing...");
-            fs::remove_file(&"examples/extracted.txt").unwrap();
-        }
-        if Path::new(&"examples/extracted_image.png").exists() {
-            println!("Removing...");
-        }
-        henon.transform(&"examples/lenna.png".to_string(), &"examples/lenna_encrypted.png".to_string());
-        henon.transform(&"examples/lenna_encrypted.png".to_string(), &"examples/lenna_decrypted.png".to_string());
-        if let Err(e) =  stego::lsb::enc_payload(&"examples/cover_audio.wav".to_string(),
-                                &"examples/stego_audio.wav".to_string(),
-                                &"examples/secret_text.txt".to_string(),
-                                2u8) {
-            println!("Error encoding WAV file with secret data: {:?}", e);
-        }
-        if let Err(e) = stego::lsb::dec_payload(
-            &"examples/stego_audio.wav".to_string(),
-            &"examples/extracted.txt".to_string(),
-            2u8) {
-            println!("Error decoding WAV file with secret data: {:?}", e);
-        }
-        if let Err(e) =  stego::lsb::enc_payload(&"examples/cover_audio.wav".to_string(),
-                                &"examples/stego_audio.wav".to_string(),
-                                &"examples/lenna.png".to_string(),
-                                2u8) {
-            println!("Error encoding WAV file with secret data: {:?}", e);
-        }
-        if let Err(e) = stego::lsb::dec_payload(
-            &"examples/stego_audio.wav".to_string(),
-            &"examples/extracted_image.png".to_string(),
-            2u8) {
-            println!("Error decoding WAV file with secret data: {:?}", e);
+
+        {   // Steganography with .txt file. Then with .png file.
+            if let Err(e) =  stego::lsb::enc_payload(&"examples/cover_audio.wav".to_string(),
+                                    &"examples/stego_audio1.wav".to_string(),
+                                    &"examples/secret_text.txt".to_string(),
+                                    2u8) {
+                println!("Error encoding WAV file with secret data: {:?}", e);
+            }
+            if let Err(e) = stego::lsb::dec_payload(
+                &"examples/stego_audio1.wav".to_string(),
+                &"examples/extracted.txt".to_string(),
+                2u8) {
+                println!("Error decoding WAV file with secret data: {:?}", e);
+            }
+            if let Err(e) =  stego::lsb::enc_payload(&"examples/cover_audio.wav".to_string(),
+                                    &"examples/stego_audio2.wav".to_string(),
+                                    &"examples/lenna.png".to_string(),
+                                    2u8) {
+                println!("Error encoding WAV file with secret data: {:?}", e);
+            }
+            if let Err(e) = stego::lsb::dec_payload(
+                &"examples/stego_audio2.wav".to_string(),
+                &"examples/extracted_image.png".to_string(),
+                2u8) {
+                println!("Error decoding WAV file with secret data: {:?}", e);
+            }
         }
     }
 
