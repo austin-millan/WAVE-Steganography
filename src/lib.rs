@@ -14,26 +14,36 @@ pub mod stego {
         use get_bit_at;
         use bin_to_dec;
 
-        pub fn enc_payload(wav_path: &String, stego_out_path: &String, payload_path: &String, _lsb_depth: u8) {
-            let mut reader = WavReader::open(&wav_path).unwrap();
-//            let spec = reader.spec();
-            let mut writer = WavWriter::create(&stego_out_path,reader.spec()).unwrap();
-
-            let payload = File::open(payload_path).unwrap();
+        pub fn enc_payload(wav_path: &String, stego_out_path: &String, payload_path: &String, _lsb_depth: u8) -> Result<(), &'static str> {
+            let payload = match File::open(payload_path) {
+                Err(_e) => return Err("Error opening payload/secret path for steganography."),
+                Ok(_w) => _w,
+            };
+            let mut reader = match WavReader::open(&wav_path) {
+                Err(_e) => return Err("Error opening input WAV file for steganography."),
+                Ok(_r) => _r,
+            };
+            let mut writer = match WavWriter::create(&stego_out_path,reader.spec()) {
+                Err(_e) => return Err("Error creating WavWriter required for exporting WAV files."),
+                Ok(_w) => _w,
+            };
 
             // Read 16-bit samples
             let samples: Vec<i16> = reader.samples()
                 .map(|s| s.unwrap())
                 .collect();
             // Metadata
-            let payload_len = metadata(&wav_path).unwrap().len() as i32;
+            let payload_len = metadata(&payload_path).unwrap().len() as i32;
 
             // Encode metadata about payload (payload data length)
             let mut i: i64 = 0;
             for mut sample in &samples[0..32 as usize] {
                 let bit_to_store = get_bit_at(payload_len, i as u8);
                 let sample = set_bit_at(**&sample as i32, 0, bit_to_store as u8);
-                writer.write_sample(sample as i16).unwrap();
+                let _res = match writer.write_sample(sample as i16){
+                    Err(_e) => return Err("Error writing out sample to audio file."),
+                    Ok(_w) => _w,
+                };
                 i += 1;
             }
             let mut data_iterator = ByteSliceIter::new(payload, 1 as usize);
@@ -43,7 +53,10 @@ pub mod stego {
                      for bit_i in 0..8{
                          let bit_to_store = get_bit_at(*byte as i32, bit_i);
                          let mut steg_sample = set_bit_at(**&samples.index(sample_i) as i32, 0, bit_to_store as u8);
-                         writer.write_sample(steg_sample as i16).unwrap();
+                         let _res = match writer.write_sample(steg_sample as i16){
+                             Err(_e) => return Err("Error writing out sample to audio file."),
+                             Ok(_w) => _w,
+                         };
                          sample_i += 1;
                      }
                 }
@@ -53,11 +66,15 @@ pub mod stego {
             }
 
             writer.finalize().unwrap();
+            Ok(())
         }
 
-        pub fn dec_payload(stego_in_path: &String, payload_out_path: &String, _lsb_depth: u8) {
+        pub fn dec_payload(stego_in_path: &String, payload_out_path: &String, _lsb_depth: u8) -> Result<(), &'static str> {
             // IO for reading wav files, samples, ...
-            let mut reader = WavReader::open(&stego_in_path).unwrap();
+            let mut reader = match WavReader::open(&stego_in_path) {
+                Err(_e) => return Err("Error opening input WAV file for steganography."),
+                Ok(_r) => _r,
+            };
             let mut i = 0;
             let mut bits = [0u8; 8];
             let mut payload_vec: Vec<u8> = Vec::new();
@@ -71,37 +88,35 @@ pub mod stego {
             let mut len_payload = [0u8; 32];
             for mut sample in &samples[0..32 as usize] {
                 if get_bit_at(**&sample as i32, 0)
-                    { len_payload[(31 - i as u8) as usize] = 1; } else { len_payload[(31 - i as u8) as usize] = 0; }
+                    { len_payload[(31 - i as u8) as usize] = 1; }
+                    else { len_payload[(31 - i as u8) as usize] = 0; }
                 i += 1;
+            }
+            i = 0;
+            let len_payload_dec = bin_to_dec(&len_payload);
+
+            if len_payload_dec*8 > samples.len() as i32 {
+                return Err("Length of payload is too large to decode from stego audio file.");
+            }
+            for mut sample in &samples[32..32+(len_payload_dec*8) as usize] {
+                if get_bit_at(**&sample as i32, 0)
+                    { bits[(7-i as u8) as usize] = 1;}
+                else
+                    { bits[(7-i as u8) as usize] = 0;}
+                i += 1;
+                if (i% 8 == 0)  && i != 0 {
+                    payload_vec.push( bin_to_dec(&bits) as u8);
+                    bits = [0u8; 8];
+                    i = 0;
+                }
             }
 
-            let len_payload = bin_to_dec(&len_payload);
-            let mut file_buffer = File::create(payload_out_path).unwrap();
-            for mut sample in &samples[32..32+(len_payload*8) as usize] {
-                if get_bit_at(**&sample as i32, 0)
-                    { bits[(7-i as u8) as usize] = 1;}
-                else
-                    { bits[(7-i as u8) as usize] = 0;}
-                i += 1;
-                if (i% 8 == 0)  && i != 0 {
-                    payload_vec.push(bin_to_dec(&bits) as u8);
-                    bits = [0u8; 8];
-                    i = 0;
-                }
-            }
-            for mut sample in &samples[32+(len_payload*8) as usize..] {
-                if get_bit_at(**&sample as i32, 0)
-                    { bits[(7-i as u8) as usize] = 1;}
-                else
-                    { bits[(7-i as u8) as usize] = 0;}
-                i += 1;
-                if (i% 8 == 0)  && i != 0 {
-                    payload_vec.push(bin_to_dec(&bits) as u8);
-                    bits = [0u8; 8];
-                    i = 0;
-                }
-            }
+            let mut file_buffer = match File::create(&payload_out_path) {
+                Err(_e) => return Err("Error creating payload/secret destination path for steganography."),
+                Ok(_w) => _w,
+            };
             File::write_all(&mut file_buffer, &payload_vec).unwrap();
+            Ok(())
         }
 
         pub fn display_spec(spec: WavSpec) {

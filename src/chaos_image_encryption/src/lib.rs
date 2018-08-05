@@ -75,16 +75,20 @@ pub mod image_obfuscation {
         SingerMapParameters{parameters: SingerMapParameters }
     }
 
-
     impl ArnoldCatMap { }
     /// Henon transformation using DynamicImage
     impl HenonMap {
         /// Wrapper
-        pub fn transform(&mut self, input_path: &String, output_path: &String) {
-            self.transform_image(open(&input_path).unwrap().clone()).save(output_path).unwrap();
+        pub fn transform(&mut self, input_path: &String, output_path: &String) -> Result<(), &'static str> {
+            let mut input_img = match open(input_path) {
+                Err(e) => return Err("Cannot open image."),
+                Ok(f) => f,
+            };
+            self.transform_image(input_img.clone()).map(|i|i.save(output_path));
+            Ok(())
         }
 
-        pub fn transform_image(&mut self, mut img: DynamicImage) -> DynamicImage {
+        fn transform_image(&mut self, mut img: DynamicImage) -> Result<DynamicImage, &'static str> {
             let valid = self.is_valid();  // use later when it's implemented
             let (width, height) = img.dimensions();
             let mut noisy = img.brighten(0);
@@ -97,10 +101,10 @@ pub mod image_obfuscation {
                     px.data[0] ^= henon_val;
                     px.data[1] ^= henon_val;
                     px.data[2] ^= henon_val;
-                    let res = noisy.put_pixel(w, h, px);
+                    let _res = noisy.put_pixel(w, h, px);
                 }
             }
-            noisy
+            Ok(noisy)
         }
 
         /// Generates key stream for encryption/decryption process using Henon chaotic map.
@@ -152,15 +156,13 @@ pub mod image_obfuscation {
             t_img_matrix
         }
 
-        pub fn is_valid(&self) -> bool {
+        fn is_valid(&self) -> bool {
             // verify parameters field is of correct type
             { match self.parameters { HenonMapParameters{a: ref _a, b: ref _b, x: ref _x, y: ref_y} => true }}
             // ...fill in later
         }
     }
 }
-
-
 
 /// This function returns the amount of difference between two images as a float.
 /// Based on: https://gkbrk.com/2018/01/evolving-line-art/

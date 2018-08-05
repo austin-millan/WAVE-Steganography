@@ -61,17 +61,19 @@ Run `chaos_image_encryption` tests:
 Steganography
 
 ```
-USAGE:
+Embed payload in WAV file.
     main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <OUTFILE_PATH>
 
+Extract payload in WAV file.
     main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH>
 ```
 
 Image Encryption
 ```
-USAGE:
+The pixels of secret image are encrypted using chaotic henon sequences as a keystream.
     main encrypt <SECRET_PATH> <OUTFILE_PATH>
 
+Pixels of the secret image are decrypted using chaotic henon sequences as a keystream.
     main decrypt <SECRET_PATH> <OUTFILE_PATH>
 ```
 
@@ -88,6 +90,9 @@ Please see
 - Image Encryption by Henon Chaotic System
     - [ ] "Confusion" isn't reached with current image encryption system. Only "diffusion" based on pixel values.
     - [ ] The size of decrypted image does not match exactly with original image, even with lossless formats like PNG.
+    - [ ] Issue with lossy format: if encrypting lossy formats (JPG),
+    the output should be in a lossless format to avoid issues with decrypting an image that has lost data.
+
 
 ## License
 
