@@ -89,7 +89,6 @@ pub mod image_obfuscation {
         }
 
         fn transform_image(&mut self, mut img: DynamicImage) -> Result<DynamicImage, &'static str> {
-            let valid = self.is_valid();  // use later when it's implemented
             let (width, height) = img.dimensions();
             let mut noisy = img.brighten(0);
             let henon_map = self.generate_keystream(width, height);
@@ -113,7 +112,7 @@ pub mod image_obfuscation {
         pub fn generate_keystream(&mut self, width: u32, height: u32) -> Vec<Vec<u8>> {
             // (1) choose the initial value of (X1,Y1) for Henon map
             let (mut x, mut y) = (self.parameters.x, self.parameters.y);
-            let (mut x_n, mut y_n) = (0.1f64, 0.1f64);
+             let (mut x_n, mut y_n) = (self.parameters.x, self.parameters.y);
 
             // (2) If the image size is m×n then the number of henon sequence will be 8×m×n obtained by
             // henon equation (x_n, y_n below).
@@ -155,12 +154,6 @@ pub mod image_obfuscation {
             }
             t_img_matrix
         }
-
-        fn is_valid(&self) -> bool {
-            // verify parameters field is of correct type
-            { match self.parameters { HenonMapParameters{a: ref _a, b: ref _b, x: ref _x, y: ref_y} => true }}
-            // ...fill in later
-        }
     }
 }
 
@@ -172,7 +165,7 @@ pub fn image_diff(l_path: &String, r_path: &String) -> f64 {
         &image::open(&r_path).unwrap())
 }
 
-pub fn vec_to_dec(vect: Vec<u8>) -> u8 { // @todo: make more generic
+pub fn vec_to_dec(vect: Vec<u8>) -> u8 {
     let mut res: u8 = 0;
     for item in vect.iter() {
         res = res * 2 + *item as u8;
