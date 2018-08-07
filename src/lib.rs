@@ -1,3 +1,8 @@
+// Copyright © 2018 Austin Millan
+// [This software is released under the "MIT License"]
+// Please see the file LICENSE in the source
+// distribution of this software for license terms.
+
 extern crate hound;
 extern crate read_byte_slice;
 

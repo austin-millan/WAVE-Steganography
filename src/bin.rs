@@ -1,7 +1,11 @@
+// Copyright © 2018 Austin Millan
+// [This software is released under the "MIT License"]
+// Please see the file LICENSE in the source
+// distribution of this software for license terms.
+
 extern crate chaos_image_encryption;
 extern crate steganography;
 extern crate clap;
-
 
 //#[cfg(not(feature = "yaml"))]
 fn main() {
@@ -10,8 +14,6 @@ fn main() {
     use clap::SubCommand;
     use chaos_image_encryption::image_obfuscation::*;
     use steganography::stego;
-    use std::path::Path;
-    use std::fs;
 
     let matches = App::new("Wave-Steganography")
                           .version("0.1")
