@@ -9,9 +9,14 @@ derive_builder = "*"
 read-byte-slice = "*"
 clap = { version = "2", features = ["yaml"] }
 
+[dev-dependencies]
+file_diff = "1.0.0"
+
 [lib]
 name = "steganography"
 path = "src/lib.rs"
+bench = true
+doc = true
 
 [[bin]]
 name = "main"
@@ -19,6 +24,18 @@ path = "src/bin.rs"
 
 [workspace]
 members = ["src/chaos_image_encryption"]
+
+# The testing profile, used for `cargo test`.
+[profile.test]
+opt-level = 0
+debug = 2
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 16
+panic = 'unwind'
+incremental = true
+overflow-checks = true
 
 [dependencies.chaos_image_encryption]
 path = "src/chaos_image_encryption"
