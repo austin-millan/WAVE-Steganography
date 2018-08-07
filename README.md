@@ -1,4 +1,7 @@
 # WAVE-Steganography
+
+[![Build Status](https://travis-ci.org/austin-millan/WAVE-Steganography.svg?branch=master)](https://travis-ci.org/austin-millan/WAVE-Steganography)
+
 <img src="https://cdn-images-1.medium.com/max/1400/1*dQyfOpFWmSxrmdOcQgW6OQ.jpeg" width="480" height="225">
 
 **Note: The software is still under active development and not
