@@ -1,3 +1,8 @@
+// Copyright © 2018 Austin Millan
+// [This software is released under the "MIT License"]
+// Please see the file LICENSE in the source
+// distribution of this software for license terms.
+
 #[macro_use] extern crate derive_builder;
 extern crate image;
 extern crate imageproc;
