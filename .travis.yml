@@ -1,0 +1,17 @@
+language: rust
+sudo: false
+os:
+  - linux
+  - osx
+cache: cargo
+rust:
+  - stable
+branches:
+  only:
+  - master
+  - dev
+matrix:
+  fast_finish: true
+script:
+  - cargo build --all
+  - cargo test --all

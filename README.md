@@ -62,10 +62,10 @@ Steganography
 
 ```
 Embed payload in WAV file.
-    main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <OUTFILE_PATH>
+    main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <STEGO_OUTFILE_PATH> [SUBCOMMAND]
 
 Extract payload in WAV file.
-    main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH>
+    main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH> [SUBCOMMAND]
 ```
 
 Image Encryption
