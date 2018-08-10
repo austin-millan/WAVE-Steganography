@@ -114,7 +114,7 @@ pub mod stego {
                 else
                     { bits[(7u8 - i) as usize] = 0;}
                 i += 1;
-                if (i% 8 == 0)  && i != 0 {
+                if i% 8 == 0 {
                     payload_vec.push( bin_to_dec(&bits) as u8);
                     bits = [0u8; 8];
                     i = 0;

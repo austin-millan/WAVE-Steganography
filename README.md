@@ -1,8 +1,10 @@
+
 # WAVE-Steganography
 
 [![Build Status](https://travis-ci.org/austin-millan/WAVE-Steganography.svg?branch=master)](https://travis-ci.org/austin-millan/WAVE-Steganography)
 
 <img src="https://cdn-images-1.medium.com/max/1400/1*dQyfOpFWmSxrmdOcQgW6OQ.jpeg" width="480" height="225">
+
 
 ## Steganography Technique Used
 
@@ -17,7 +19,7 @@ The following are required:
 * [Git](https://git-scm.com/downloads)
 
 
-###  Dependencies
+### Dependencies
 Dependencies are managed using Cargo. See manifest files here:
 - [Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/Cargo.toml) (wave-stegranography)
 - [Cargo.toml](https://github.com/austin-millan/WAVE-Steganography/blob/master/src/chaos_image_encryption/Cargo.toml) (chaos-image-encryption)
@@ -41,24 +43,27 @@ Run all tests:
 
 ## CLI Usage
 
-Steganography
+**Steganography  **
 
 ```
 Embed payload in WAV file.
-    main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <STEGO_OUTFILE_PATH> [SUBCOMMAND]
-
+ main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <STEGO_OUTFILE_PATH> [SUBCOMMAND]
 Extract payload in WAV file.
-    main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH> [SUBCOMMAND]
-```
+ main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH> [SUBCOMMAND]```
 
-Image Encryption
+<img src="https://media.giphy.com/media/5ZZEwBseTuDOyk8Jno/giphy.gif">
+
+**Image Encryption**
 ```
 The pixels of secret image are encrypted using chaotic henon sequences as a keystream.
-    main encrypt <SECRET_PATH> <OUTFILE_PATH>
-
+ main encrypt <SECRET_PATH> <OUTFILE_PATH>
 Pixels of the secret image are decrypted using chaotic henon sequences as a keystream.
-    main decrypt <SECRET_PATH> <OUTFILE_PATH>
-```
+ main decrypt <SECRET_PATH> <OUTFILE_PATH>```
+
+<img src="https://media.giphy.com/media/2wY05371NGffqtpa9K/giphy.gif">
+
+
+
 
 ## Contributing
 Please see
