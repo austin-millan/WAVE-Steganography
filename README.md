@@ -43,15 +43,17 @@ Run all tests:
 
 ## CLI Usage
 
-**Steganography  **
+**Steganography**
 
 ```
 Embed payload in WAV file.
  main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <STEGO_OUTFILE_PATH> [SUBCOMMAND]
 Extract payload in WAV file.
  main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH> [SUBCOMMAND]```
+```
 
-<img src="https://media.giphy.com/media/5ZZEwBseTuDOyk8Jno/giphy.gif">
+![](https://media.giphy.com/media/5ZZEwBseTuDOyk8Jno/giphy.gif)
+
 
 **Image Encryption**
 ```
@@ -59,10 +61,9 @@ The pixels of secret image are encrypted using chaotic henon sequences as a keys
  main encrypt <SECRET_PATH> <OUTFILE_PATH>
 Pixels of the secret image are decrypted using chaotic henon sequences as a keystream.
  main decrypt <SECRET_PATH> <OUTFILE_PATH>```
+```
 
-<img src="https://media.giphy.com/media/2wY05371NGffqtpa9K/giphy.gif">
-
-
+![](hhttps://media.giphy.com/media/2wY05371NGffqtpa9K/giphy.gif)
 
 
 ## Contributing
