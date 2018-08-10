@@ -49,22 +49,20 @@ Run all tests:
 Embed payload in WAV file.
  main steg [FLAGS] <COVER_PATH> <SECRET_PATH> <STEGO_OUTFILE_PATH> [SUBCOMMAND]
 Extract payload in WAV file.
- main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH> [SUBCOMMAND]```
+ main unsteg [FLAGS] <STEGO_PATH> <OUTFILE_PATH> [SUBCOMMAND]
 ```
 
-![](https://media.giphy.com/media/5ZZEwBseTuDOyk8Jno/giphy.gif)
-
+<img src="https://i.giphy.com/media/5ZZEwBseTuDOyk8Jno/giphy.webp">
 
 **Image Encryption**
 ```
 The pixels of secret image are encrypted using chaotic henon sequences as a keystream.
  main encrypt <SECRET_PATH> <OUTFILE_PATH>
 Pixels of the secret image are decrypted using chaotic henon sequences as a keystream.
- main decrypt <SECRET_PATH> <OUTFILE_PATH>```
+ main decrypt <SECRET_PATH> <OUTFILE_PATH>
 ```
 
-![](hhttps://media.giphy.com/media/2wY05371NGffqtpa9K/giphy.gif)
-
+<img src="https://i.giphy.com/media/551QEfda5w9rr0uYYS/giphy.webp">
 
 ## Contributing
 Please see
