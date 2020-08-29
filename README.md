@@ -99,3 +99,7 @@ Provided under MIT License by Austin Millan.
 ## References
 
 * [AUDIO STEGANOGRAPHY TECHNIQUES](http://shodhganga.inflibnet.ac.in/bitstream/10603/147552/14/14_chapter%205.pdf)
+
+## Repository Views
+
+[![HitCount](http://hits.dwyl.com/austin-millan/WAVE-Steganography.svg)](http://hits.dwyl.com/austin-millan/WAVE-Steganography)
